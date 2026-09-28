@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" font-family="Manrope, Liberation Sans, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5B4FE0"/>
+    </marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8B7DFF"/>
+    </marker>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#121226"/>
+      <stop offset="1" stop-color="#05050B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="720" fill="#ffffff"/>
+
+  <g font-family="Sora, Liberation Sans, Arial, sans-serif">
+  <rect x="40" y="70" width="230" height="110" rx="14" fill="#F1EFFF" stroke="#5B4FE0" stroke-width="2"/>
+  <text x="155" y="116" text-anchor="middle" font-size="25" font-weight="700" fill="#2E2699">Operadora A</text>
+  <text x="155" y="149" text-anchor="middle" font-size="19" fill="#4A4A63" font-family="Manrope, Liberation Sans, Arial">fibra · principal</text>
+
+  <rect x="40" y="420" width="230" height="110" rx="14" fill="#FFFFFF" stroke="#8B7DFF" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="155" y="466" text-anchor="middle" font-size="25" font-weight="700" fill="#5B4FE0">Operadora B</text>
+  <text x="155" y="499" text-anchor="middle" font-size="19" fill="#4A4A63" font-family="Manrope, Liberation Sans, Arial">fibra · reserva</text>
+
+  <rect x="340" y="70" width="250" height="110" rx="14" fill="#fff" stroke="#5B4FE0" stroke-width="2"/>
+  <text x="465" y="113" text-anchor="middle" font-size="23" font-weight="600" fill="#2E2699">Modem A</text>
+  <text x="465" y="146" text-anchor="middle" font-size="18" fill="#4A4A63" font-family="Manrope, Liberation Sans, Arial">rede 192.168.10.0/24</text>
+
+  <rect x="340" y="400" width="250" height="150" rx="14" fill="#fff" stroke="#8B7DFF" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="465" y="440" text-anchor="middle" font-size="21" font-weight="600" fill="#5B4FE0">ONT da operadora</text>
+  <line x1="465" y1="452" x2="465" y2="474" stroke="#8B7DFF" stroke-width="2.5" marker-end="url(#b)"/>
+  <text x="465" y="500" text-anchor="middle" font-size="21" font-weight="600" fill="#5B4FE0">Roteador B</text>
+  <text x="465" y="530" text-anchor="middle" font-size="18" fill="#4A4A63" font-family="Manrope, Liberation Sans, Arial">rede 192.168.20.0/24</text>
+  </g>
+
+  <line x1="270" y1="125" x2="336" y2="125" stroke="#5B4FE0" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="270" y1="475" x2="336" y2="475" stroke="#8B7DFF" stroke-width="3" stroke-dasharray="9 6" marker-end="url(#b)"/>
+
+  <rect x="680" y="190" width="300" height="250" rx="18" fill="url(#g)" stroke="#34345A" stroke-width="2"/>
+  <text x="830" y="240" text-anchor="middle" font-size="27" font-weight="700" fill="#F2F2F8" font-family="Sora, Liberation Sans, Arial">MikroTik hEX</text>
+  <text x="830" y="272" text-anchor="middle" font-size="18" fill="#A2A2B8">MK-EMPRESA · RouterOS 7.23.7</text>
+  <text x="830" y="312" text-anchor="middle" font-size="19" fill="#F2F2F8">Failover automático</text>
+  <text x="830" y="340" text-anchor="middle" font-size="19" fill="#F2F2F8">Firewall · DHCP · DNS</text>
+  <text x="830" y="382" text-anchor="middle" font-size="24" font-weight="700" fill="#8B7DFF" font-family="Sora, Liberation Sans, Arial">172.16.10.1</text>
+  <text x="830" y="410" text-anchor="middle" font-size="16" fill="#A2A2B8">gateway da rede interna</text>
+
+  <path d="M590,125 L640,125 L640,250 L676,250" fill="none" stroke="#5B4FE0" stroke-width="3" marker-end="url(#a)"/>
+  <text x="596" y="226" font-size="18" font-weight="700" fill="#2E2699">ether1</text>
+  <path d="M590,475 L640,475 L640,380 L676,380" fill="none" stroke="#8B7DFF" stroke-width="3" stroke-dasharray="9 6" marker-end="url(#b)"/>
+  <text x="596" y="408" font-size="18" font-weight="700" fill="#5B4FE0">ether2</text>
+
+  <rect x="1060" y="255" width="290" height="120" rx="14" fill="#fff" stroke="#5B4FE0" stroke-width="2"/>
+  <text x="1205" y="302" text-anchor="middle" font-size="23" font-weight="600" fill="#2E2699" font-family="Sora, Liberation Sans, Arial">Switch</text>
+  <text x="1205" y="336" text-anchor="middle" font-size="18" fill="#4A4A63">8 portas</text>
+  <line x1="980" y1="315" x2="1056" y2="315" stroke="#5B4FE0" stroke-width="3" marker-end="url(#a)"/>
+  <text x="990" y="300" font-size="18" font-weight="700" fill="#2E2699">ether3</text>
+
+  <g font-size="19" text-anchor="middle">
+    <rect x="1000" y="500" width="110" height="80" rx="12" fill="#F1EFFF" stroke="#5B4FE0" stroke-width="2"/>
+    <text x="1055" y="535" font-weight="700" fill="#2E2699">Sala</text>
+    <text x="1055" y="562" fill="#4A4A63">Wi-Fi</text>
+    <rect x="1150" y="500" width="110" height="80" rx="12" fill="#F1EFFF" stroke="#5B4FE0" stroke-width="2"/>
+    <text x="1205" y="535" font-weight="700" fill="#2E2699">Sala</text>
+    <text x="1205" y="562" fill="#4A4A63">Wi-Fi</text>
+    <rect x="1300" y="500" width="80" height="80" rx="12" fill="#F1EFFF" stroke="#5B4FE0" stroke-width="2"/>
+    <text x="1340" y="545" font-weight="700" fill="#2E2699">...</text>
+  </g>
+  <line x1="1150" y1="375" x2="1060" y2="496" stroke="#5B4FE0" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="1205" y1="375" x2="1205" y2="496" stroke="#5B4FE0" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="1260" y1="375" x2="1335" y2="496" stroke="#5B4FE0" stroke-width="2.5" marker-end="url(#a)"/>
+  <text x="1175" y="625" text-anchor="middle" font-size="17" fill="#4A4A63">Contêineres (salas) · rede interna 172.16.10.0/24</text>
+
+  <line x1="60" y1="650" x2="120" y2="650" stroke="#5B4FE0" stroke-width="3"/>
+  <text x="132" y="657" font-size="18" fill="#4A4A63">Link principal (Operadora A) e rede interna</text>
+  <line x1="60" y1="690" x2="120" y2="690" stroke="#8B7DFF" stroke-width="3" stroke-dasharray="9 6"/>
+  <text x="132" y="697" font-size="18" fill="#4A4A63">Link de reserva (Operadora B): assume sozinho se a Operadora A cair ou degradar</text>
+</svg>

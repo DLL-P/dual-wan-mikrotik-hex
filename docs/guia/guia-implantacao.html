@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Implantação hEX Operadora A + Operadora B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EDF1F2; --surface:#FFFFFF; --surface-2:#F5F8F9; --ink:#15202A; --muted:#566471; --line:#D2DADF;
+  --accent:#0A7580; --accent-soft:#DCEFF1; --pin:#E0492A;
+  --ok:#1C7A44; --ok-soft:#E2F3E8; --warn:#8F5500; --warn-soft:#FFF0D6; --bad:#B42318; --bad-soft:#FDE6E2;
+  --code-bg:#0F1920; --code-ink:#DCE6EC; --code-line:#223039;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0C1216; --surface:#131C22; --surface-2:#18232A; --ink:#E3EAEE; --muted:#95A4AE; --line:#26333C;
+    --accent:#3FC1CB; --accent-soft:#10343A; --pin:#FF6B4A;
+    --ok:#5CCB8A; --ok-soft:#11301F; --warn:#F0B45A; --warn-soft:#33260F; --bad:#FF8A7A; --bad-soft:#3A1712;
+    --code-bg:#0A1015; --code-ink:#DCE6EC; --code-line:#1C2830;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0C1216; --surface:#131C22; --surface-2:#18232A; --ink:#E3EAEE; --muted:#95A4AE; --line:#26333C;
+  --accent:#3FC1CB; --accent-soft:#10343A; --pin:#FF6B4A;
+  --ok:#5CCB8A; --ok-soft:#11301F; --warn:#F0B45A; --warn-soft:#33260F; --bad:#FF8A7A; --bad-soft:#3A1712;
+  --code-bg:#0A1015; --code-ink:#DCE6EC; --code-line:#1C2830;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);padding-inline:16px;padding-block:0 64px}
+a{color:var(--accent)}
+code,kbd{font-family:var(--mono);font-size:.88em}
+p code,li code,td code{background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* header */
+.top{padding-block:36px 8px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(34px,5vw,52px)/1.02 var(--display);letter-spacing:-.01em;margin:12px 0 12px;text-wrap:balance}
+.lead{max-width:68ch;color:var(--muted);font-size:16.5px;margin:0}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.ba figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.ba figcaption{font:600 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.ba figcaption b{font-weight:600;padding:3px 7px;border-radius:4px}
+.ba .now b{background:var(--bad-soft);color:var(--bad)}
+.ba .next b{background:var(--ok-soft);color:var(--ok)}
+.ba svg{width:100%;height:auto;display:block}
+svg .nd{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+svg .nd-a{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .ln-a{stroke:var(--accent);stroke-width:2.5;fill:none}
+svg .ln-d{stroke:var(--muted);stroke-width:2;fill:none;stroke-dasharray:5 4}
+svg .wall{stroke:var(--bad);stroke-width:2;stroke-dasharray:6 5}
+svg text{fill:var(--ink);font:500 12px var(--body)}
+svg .ts{fill:var(--muted);font-size:10.5px}
+svg .tl{fill:var(--accent);font:500 10.5px var(--mono)}
+svg .tb{fill:var(--bad);font-weight:600}
+svg .tg{fill:var(--ok);font-weight:600}
+
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.ph{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.ph .k{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ph .v{font:700 22px/1.1 var(--display);margin-top:6px}
+.ph p{margin:6px 0 0;color:var(--muted);font-size:13.5px;line-height:1.5}
+.ph.b{border-color:var(--warn);background:var(--warn-soft)}
+.ph.b .v{color:var(--warn)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;margin-top:36px;align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);max-height:calc(100vh - 32px);overflow:auto;font-size:13.5px}
+.toc h2{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.prog i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.progt{font:500 12px var(--mono);color:var(--muted);margin-bottom:16px}
+.toc ol{list-style:none;margin:0 0 14px;padding:0}
+.toc .grp{font:700 15px/1 var(--display);letter-spacing:.02em;margin:14px 0 6px;color:var(--ink)}
+.toc a{display:grid;grid-template-columns:30px 1fr 14px;gap:6px;align-items:baseline;text-decoration:none;color:var(--muted);padding:4px 6px;border-radius:5px}
+.toc a:hover{background:var(--surface);color:var(--ink)}
+.toc a .n{font:500 11px var(--mono);color:var(--accent)}
+.toc a .c{color:var(--ok);font-weight:700;visibility:hidden}
+.toc a.done{color:var(--ink)}
+.toc a.done .c{visibility:visible}
+.toc-m{display:none}
+
+main{min-width:0}
+.phase-h{display:flex;align-items:baseline;gap:14px;margin:8px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.phase-h h2{font:700 32px/1 var(--display);margin:0}
+.phase-h span{color:var(--muted);font-size:14px}
+.phase-h + .intro{margin-top:-6px}
+.intro{color:var(--muted);max-width:70ch}
+
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin-bottom:22px;scroll-margin-top:16px}
+.step-h{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.step-n{font:700 15px/1 var(--mono);color:var(--accent);background:var(--accent-soft);padding:7px 9px;border-radius:6px}
+.step h3{font:700 25px/1.1 var(--display);margin:0;flex:1;min-width:200px;text-wrap:balance}
+.done-l{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 9px}
+.done-l input{accent-color:var(--ok);width:16px;height:16px;margin:0}
+.done-l:has(input:checked){border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.step.is-done{border-color:color-mix(in srgb,var(--ok) 45%,var(--line))}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.chip{font:500 12px/1 var(--mono);padding:5px 8px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.chip b{color:var(--ink);font-weight:500}
+.why{color:var(--muted);font-size:14.5px;max-width:72ch}
+.step p,.step li{max-width:74ch}
+.step ul,.step ol.plain{padding-left:20px}
+.step h4{font:600 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+
+.box{border-radius:8px;padding:12px 14px;margin:14px 0;font-size:14.5px;border:1px solid}
+.box > b:first-child{display:block;font:600 11.5px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px}
+.box p{margin:0}
+.box ul{margin:4px 0 0;padding-left:18px}
+.ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}
+.ok > b:first-child{color:var(--ok)}
+.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 35%,transparent)}
+.warn > b:first-child{color:var(--warn)}
+.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.bad > b:first-child{color:var(--bad)}
+.tip{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.tip > b:first-child{color:var(--accent)}
+
+/* code blocks */
+.code{background:var(--code-bg);border-radius:9px;margin:12px 0;overflow:hidden;border:1px solid var(--code-line)}
+.code-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 7px 14px;border-bottom:1px solid var(--code-line)}
+.code-h span{font:500 11.5px/1 var(--mono);letter-spacing:.05em;color:#8FA3AF;display:flex;align-items:center;gap:8px}
+.code-h span::before{content:"";width:8px;height:8px;border-radius:2px;background:#35B6BF}
+.code[data-k="ps"] .code-h span::before,.code[data-k="psa"] .code-h span::before{background:#5B9BFF}
+.code[data-k="cmd"] .code-h span::before{background:#C7CED4}
+.code[data-k="rsc"] .code-h span::before{background:#F0B45A}
+.cp{font:500 12px var(--body);color:#E8F0F4;background:#1F2E38;border:1px solid #2F414D;border-radius:6px;padding:5px 12px;cursor:pointer}
+.cp:hover{background:#2A3D49}
+.cp:focus-visible{outline:2px solid #3FC1CB;outline-offset:2px}
+.cp.okd{background:#1C5A36;border-color:#2D7A4F}
+.code pre{margin:0;padding:12px 14px;overflow-x:auto;color:var(--code-ink);font:13px/1.6 var(--mono);white-space:pre}
+.code.tall pre{max-height:420px;overflow:auto}
+.code .note{padding:0 14px 10px;color:#8FA3AF;font-size:12.5px;margin-top:-4px}
+
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+.tw{overflow-x:auto}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.t th{font:600 11.5px/1.2 var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+table.t td:first-child{white-space:nowrap;font-family:var(--mono);font-size:13px}
+
+.checklist{list-style:none;padding:0!important;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+.checklist li{padding-left:24px;position:relative}
+.checklist li::before{content:"";position:absolute;left:0;top:5px;width:13px;height:13px;border:1.5px solid var(--muted);border-radius:3px}
+
+details.gl{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin-bottom:22px}
+details.gl summary{cursor:pointer;font:700 20px/1.2 var(--display)}
+details.gl dl{display:grid;grid-template-columns:170px 1fr;gap:8px 18px;margin:14px 0 4px;font-size:14.5px}
+details.gl dt{font-family:var(--mono);font-size:13px;color:var(--accent)}
+details.gl dd{margin:0;color:var(--muted)}
+
+/* ---------- Winbox mock (fixed light look, like a screenshot) ---------- */
+.shot{margin:16px 0 6px}
+.shot-cap{font:500 11.5px/1 var(--mono);letter-spacing:.05em;color:var(--muted);margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.shot-cap::before{content:"SIMULAÇÃO";background:var(--surface-2);border:1px solid var(--line);padding:3px 6px;border-radius:4px;font-size:10px}
+.wbscroll{overflow-x:auto;padding-bottom:6px;border-radius:6px}
+.wb{font:12px/1.35 Tahoma,"Segoe UI",Verdana,sans-serif;color:#111;background:#F0F0F0;border:1px solid #7E8790;width:920px;box-shadow:0 6px 22px rgba(10,20,30,.16);border-radius:3px;overflow:visible}
+.wb-title{display:flex;justify-content:space-between;align-items:center;height:28px;padding:0 10px;background:#FFFFFF;border-bottom:1px solid #D0D4D8;color:#222}
+.wb-title .ctl{letter-spacing:14px;color:#555;font-size:11px}
+.wb-bar{display:flex;gap:14px;align-items:center;padding:4px 8px;border-bottom:1px solid #C9CDD1;background:#F0F0F0;color:#333}
+.wb-bar .sm{border:1px solid #ADADAD;background:#E6E6E6;padding:1px 8px}
+.wb-bar .cpu{margin-left:auto;color:#555}
+.wb-body{display:grid;grid-template-columns:22px 150px 1fr;min-height:420px}
+.wb-strip{background:#E4E6E8;border-right:1px solid #C9CDD1;writing-mode:vertical-rl;transform:rotate(180deg);text-align:right;font-weight:bold;color:#9AA0A6;padding:8px 0;letter-spacing:.06em}
+.wb-menu{list-style:none;margin:0;padding:3px 0;background:#FFFFFF;border-right:1px solid #C9CDD1;position:relative;z-index:3}
+.wb-menu li{position:relative;display:flex;align-items:center;gap:6px;height:19px;padding:0 6px 0 6px;white-space:nowrap}
+.wb-menu li i{width:12px;height:12px;border-radius:2px;flex:none;opacity:.85}
+.wb-menu li b{margin-left:auto;font-weight:normal;color:#666;font-size:10px}
+.wb-menu li.on{background:#CCE4F7;outline:1px solid #7FB6E4}
+.wb-fly{position:absolute;left:100%;top:-3px;background:#FFFFFF;border:1px solid #8C939A;box-shadow:2px 3px 8px rgba(0,0,0,.2);list-style:none;margin:0 0 0 2px;padding:3px 0;min-width:150px;z-index:5}
+.wb-fly.up{top:auto;bottom:-3px}
+.wb-fly li{height:19px;padding:0 10px}
+.wb-fly li.more{color:#999}
+.wb-work{background:#DADFE3;padding:12px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;position:relative}
+.wb-work.fly{padding-left:176px}
+.wbw{background:#F0F0F0;border:1px solid #8C939A;box-shadow:1px 2px 6px rgba(0,0,0,.18);min-width:360px;max-width:100%}
+.wbw.full{width:100%}
+.wbw.dlg{margin-left:70px;margin-top:-26px;box-shadow:3px 5px 14px rgba(0,0,0,.28)}
+.wbw-t{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(#EEF2F6,#DCE3EA);border-bottom:1px solid #A9B1B8;padding:3px 8px;font-weight:bold;color:#1F2A33}
+.wbw-t span{font-weight:normal;color:#666;letter-spacing:8px;font-size:10px}
+.wbw-tabs{display:flex;gap:2px;padding:5px 6px 0;border-bottom:1px solid #A9B1B8;align-items:flex-end}
+.wbw-tabs span{padding:3px 10px;border:1px solid #A9B1B8;border-bottom:none;background:#E3E6E9;color:#333}
+.wbw-tabs span.on{background:#F0F0F0;position:relative;top:1px;font-weight:bold}
+.wbw-tabs .pin{align-self:center;margin-left:4px}
+.wbw-tool{display:flex;gap:4px;align-items:center;flex-wrap:wrap;padding:5px 6px}
+.tb{display:inline-grid;place-items:center;width:22px;height:20px;border:1px solid #ADADAD;background:#E9E9E9;font-weight:bold;font-size:13px;line-height:1}
+.tb.add{color:#1F5FBF}.tb.rem{color:#C0392B}.tb.en{color:#2E8B3A}.tb.dis{color:#C0392B}.tb.cm{color:#B8860B}.tb.flt{color:#555;font-size:10px}
+.btn{display:inline-block;border:1px solid #ADADAD;background:#E6E6E6;padding:2px 10px;white-space:nowrap}
+.btn.pri{border-color:#0078D7;background:#E5F1FB}
+.find{margin-left:auto;border:1px solid #ABADB3;background:#fff;color:#999;padding:1px 40px 1px 5px}
+table.wbt{border-collapse:collapse;width:100%;background:#FFFFFF;border-top:1px solid #C9CDD1}
+.wbt th{background:#F3F3F3;border-right:1px solid #DADADA;border-bottom:1px solid #C9CDD1;text-align:left;font-weight:normal;padding:2px 6px;color:#333;white-space:nowrap}
+.wbt td{padding:2px 6px;white-space:nowrap;border-bottom:1px solid #F1F1F1}
+.wbt tr.sel td{background:#2F6DB5;color:#fff}
+.wbt tr.cmt td{color:#7A7F85;padding-top:3px}
+.wbt tr.inact td{color:#2F54C9}
+.wbt tr.dis td{color:#A0A4A8}
+.wbt tr.warnr td{color:#B85C00}
+.wbt td.fl{width:34px;color:#555}
+.wbt tr.sel td.fl{color:#fff}
+.wbw-s{border-top:1px solid #C9CDD1;padding:2px 6px;color:#444;background:#F0F0F0}
+.wbf-g{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px}
+.wbf{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:6px;margin-bottom:5px}
+.wbf label{text-align:right;color:#222}
+.in{display:flex;align-items:center;gap:4px;border:1px solid #ABADB3;background:#fff;min-height:19px;padding:0 5px;min-width:180px}
+.in.sel::after{content:"▾";margin-left:auto;color:#555;font-size:10px}
+.in.ro{background:#F0F0F0;border-color:#C9CDD1}
+.ck{display:inline-flex;align-items:center;gap:5px}
+.ck i{width:13px;height:13px;border:1px solid #333;background:#fff;display:inline-grid;place-items:center;font-style:normal;font-size:11px;line-height:1}
+.ck.on i::after{content:"✓";color:#111}
+.btncol{display:flex;flex-direction:column;gap:5px;min-width:130px}
+.btncol .btn{text-align:center}
+.msg{padding:6px 10px;color:#1E6B2F}
+.term{background:#000;color:#E6E6E6;font:12.5px/1.45 Consolas,"Courier New",monospace;padding:10px 12px;white-space:pre;min-height:170px}
+.term .p{color:#6FD06F}
+.term .cur{background:#E6E6E6;color:#000}
+.ctx{position:absolute;background:#fff;border:1px solid #8C939A;box-shadow:2px 3px 8px rgba(0,0,0,.25);padding:3px 0;min-width:150px;z-index:6}
+.ctx div{padding:2px 18px;height:19px}
+.ctx div.on{background:#CCE4F7;outline:1px solid #7FB6E4}
+.ctx hr{border:0;border-top:1px solid #DDD;margin:3px 0}
+.ghost{display:inline-flex;align-items:center;gap:8px;border:1px dashed #2F6DB5;background:rgba(229,241,251,.95);padding:6px 10px;color:#1F2A33}
+.ghost .doc{width:14px;height:17px;background:#fff;border:1px solid #666;position:relative}
+.ghost .doc::after{content:"";position:absolute;right:-1px;top:-1px;border-left:5px solid #666;border-bottom:5px solid #666;border-top:5px solid #DADFE3;border-right:5px solid #DADFE3;width:0;height:0}
+.wb-login{width:720px}
+.wbl-menu{padding:3px 10px;border-bottom:1px solid #C9CDD1;background:#F7F7F7}
+.wbl-form{padding:12px 16px 4px}
+.wbl-form .wbf{grid-template-columns:80px 230px auto}
+.wbl-btns{display:flex;gap:6px;justify-content:flex-end;align-items:center;padding:4px 0 10px}
+
+.pin{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--pin);color:#fff;font:700 11px/1 var(--body);flex:none;margin-left:5px;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(224,73,42,.35);vertical-align:middle}
+.wb .pin{background:#E0492A}
+@media (prefers-reduced-motion:no-preference){
+  .wb .pin{animation:pulse 2.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(224,73,42,.35)}50%{box-shadow:0 0 0 2px #fff,0 0 0 7px rgba(224,73,42,.12)}}
+}
+ol.legend{list-style:none;padding:0!important;margin:12px 0 0;display:grid;gap:7px}
+ol.legend li{display:grid;grid-template-columns:26px 1fr;align-items:start;font-size:14.5px}
+ol.legend .pin{margin:1px 0 0;box-shadow:none}
+
+/* responsive */
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;gap:12px}
+  .toc{display:none}
+  .toc-m{display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:24px}
+  .toc-m summary{cursor:pointer;font:700 18px/1.2 var(--display)}
+  .toc-m .toc{display:block;position:static;max-height:none;margin-top:10px}
+}
+@media (max-width:720px){
+  .ba{grid-template-columns:1fr}
+  .phases{grid-template-columns:1fr}
+  .step{padding:18px 16px}
+  .checklist{grid-template-columns:1fr}
+  details.gl dl{grid-template-columns:1fr;gap:2px 0}
+  details.gl dd{margin-bottom:8px}
+}
+
+@media print{
+  @page{size:A4;margin:11mm 10mm 12mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:12.5px;padding:0}
+  .toc,.toc-m,.done-l,.cp{display:none!important}
+  .layout{display:block;margin-top:18px}
+  .top{padding-top:0}
+  .ph .v{font-size:18px}
+  .step{border:1px solid #C9D2D8;padding:14px 16px;margin-bottom:14px}
+  .shot,.box,table.t,.code:not(.tall){break-inside:avoid}
+  .step-h,h4{break-after:avoid}
+  .phase-h{break-before:page}
+  .wbscroll{overflow:visible}
+  .wb{zoom:.72;box-shadow:none}
+  .wb .pin{animation:none}
+  .code.tall pre{max-height:none;overflow:visible}
+  .code pre{white-space:pre-wrap;word-break:break-all;font-size:11px}
+  details.gl{break-inside:avoid}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">MK-EMPRESA · hEX RB750Gr3 · RouterOS 7</div>
+  <h1>Rede unificada com failover Operadora A → Operadora B</h1>
+  <p class="lead">Guia de campo passo a passo. O MikroTik é todo preparado em casa, hoje. Na empresa ele entra entre as operadoras e o switch de 24 portas, e os roteadores dos contêineres viram pontos de acesso de uma rede só. Cada passo traz onde clicar, o comando pronto para copiar e o que você deve ver para saber que deu certo.</p>
+
+  <div class="ba">
+    <figure class="now">
+      <figcaption><b>Hoje</b> duas redes misturadas</figcaption>
+      <svg viewBox="0 0 360 262" role="img" aria-label="Hoje: roteadores Operadora A e Operadora B ligados no mesmo switch de 24 portas, que alimenta os roteadores dos contêineres; cada sala cai num link diferente">
+        <rect class="nd" x="12" y="10" width="150" height="40" rx="6"/>
+        <text x="87" y="28" text-anchor="middle">Roteador da Operadora A</text><text class="ts" x="87" y="42" text-anchor="middle">DHCP 192.168.10.x</text>
+        <rect class="nd" x="198" y="10" width="150" height="40" rx="6"/>
+        <text x="273" y="28" text-anchor="middle">Roteador da Operadora B</text><text class="ts" x="273" y="42" text-anchor="middle">DHCP outra faixa</text>
+        <path class="ln" d="M87 50 L150 90 M273 50 L210 90"/>
+        <rect class="nd" x="100" y="90" width="160" height="34" rx="5"/>
+        <text x="180" y="111" text-anchor="middle">Switch 24 portas</text>
+        <path class="ln" d="M180 124 L60 156 M180 124 L180 156 M180 124 L300 156"/>
+        <rect class="nd" x="12" y="156" width="96" height="40" rx="5"/><text x="60" y="173" text-anchor="middle">Contêiner 1</text><text class="ts" x="60" y="188" text-anchor="middle">cai na Operadora A</text>
+        <rect class="nd" x="132" y="156" width="96" height="40" rx="5"/><text x="180" y="173" text-anchor="middle">Contêiner 2</text><text class="ts" x="180" y="188" text-anchor="middle">cai na Operadora B</text>
+        <rect class="nd" x="252" y="156" width="96" height="40" rx="5"/><text x="300" y="173" text-anchor="middle">Contêiner 3</text><text class="ts" x="300" y="188" text-anchor="middle">cai na Operadora A</text>
+        <text class="tb" x="180" y="224" text-anchor="middle">dois DHCPs no mesmo switch: cada sala cai num link</text>
+        <text class="ts" x="180" y="244" text-anchor="middle">cada roteador faz NAT próprio: as salas não se enxergam</text>
+      </svg>
+    </figure>
+    <figure class="next">
+      <figcaption><b>Depois</b> uma rede só</figcaption>
+      <svg viewBox="0 0 360 290" role="img" aria-label="Depois: Operadora A na ether1 e Operadora B na ether2 do MikroTik; a ether3 alimenta o switch de 24 portas e os roteadores dos contêineres funcionam como APs da mesma rede">
+        <rect class="nd" x="12" y="10" width="150" height="40" rx="6"/>
+        <text x="87" y="28" text-anchor="middle">Operadora A</text><text class="ts" x="87" y="42" text-anchor="middle">principal</text>
+        <rect class="nd" x="198" y="10" width="150" height="40" rx="6"/>
+        <text x="273" y="28" text-anchor="middle">Operadora B</text><text class="ts" x="273" y="42" text-anchor="middle">reserva (failover)</text>
+        <path class="ln-a" d="M87 50 L150 96"/>
+        <path class="ln-d" d="M273 50 L210 96"/>
+        <text class="tl" x="96" y="82">ether1</text>
+        <text class="tl" x="228" y="82">ether2</text>
+        <rect class="nd-a" x="100" y="96" width="160" height="46" rx="6"/>
+        <text x="180" y="116" text-anchor="middle">MikroTik hEX</text>
+        <text class="ts" x="180" y="131" text-anchor="middle">172.16.10.1 · DHCP · failover</text>
+        <path class="ln-a" d="M180 142 L180 172"/>
+        <text class="tl" x="188" y="162">ether3</text>
+        <rect class="nd" x="100" y="172" width="160" height="32" rx="5"/>
+        <text x="180" y="192" text-anchor="middle">Switch 24 portas</text>
+        <path class="ln" d="M180 204 L60 228 M180 204 L180 228 M180 204 L300 228"/>
+        <rect class="nd" x="12" y="228" width="96" height="36" rx="5"/><text x="60" y="244" text-anchor="middle">Contêiner 1</text><text class="ts" x="60" y="257" text-anchor="middle">modo AP</text>
+        <rect class="nd" x="132" y="228" width="96" height="36" rx="5"/><text x="180" y="244" text-anchor="middle">Contêiner 2</text><text class="ts" x="180" y="257" text-anchor="middle">modo AP</text>
+        <rect class="nd" x="252" y="228" width="96" height="36" rx="5"/><text x="300" y="244" text-anchor="middle">Contêiner 3</text><text class="ts" x="300" y="257" text-anchor="middle">modo AP</text>
+        <text class="tg" x="180" y="284" text-anchor="middle">172.16.10.x em todas as salas · o mesmo Wi-Fi em todas</text>
+      </svg>
+    </figure>
+  </div>
+
+  <div class="phases">
+    <div class="ph"><div class="k">Fase A · em casa, hoje</div><div class="v">~40 min</div><p>Atualizar, gravar o script e testar o hEX na sua internet. Ele chega pronto.</p></div>
+    <div class="ph"><div class="k">Fase B · na empresa</div><div class="v">~15 min + 10 por sala</div><p>MikroTik no rack e todas as salas com internet. Depois cada roteador de contêiner vira AP.</p></div>
+    <div class="ph b"><div class="k">Plano B</div><div class="v">volta em 5 min</div><p>Tire uma foto do rack antes. Para voltar, os cabos das operadoras voltam para as mesmas portas do switch.</p></div>
+  </div>
+
+  <details class="toc-m" id="toc-m"><summary>Passos e progresso</summary><nav class="toc" data-toc></nav></details>
+</header>
+
+<div class="layout">
+<aside class="toc" data-toc aria-label="Passos"></aside>
+<main>
+
+<details class="gl">
+  <summary>Vocabulário rápido do MikroTik (1 minuto)</summary>
+  <dl>
+    <dt>Winbox</dt><dd>Programa do Windows para configurar o MikroTik com janelas e menus. Conecta até pelo MAC, sem IP.</dd>
+    <dt>RouterOS</dt><dd>O sistema do MikroTik. Precisamos da versão 7.</dd>
+    <dt>New Terminal</dt><dd>Linha de comando dentro do Winbox. Tudo que tem bloco "RouterOS" aqui é colado nele.</dd>
+    <dt>Bridge</dt><dd>Junta portas numa rede só. A <code>bridge-LAN</code> une ether3, ether4 e ether5 como um switch.</dd>
+    <dt>DHCP Client</dt><dd>O MikroTik pedindo IP ao roteador da operadora, como um PC faria.</dd>
+    <dt>Distance</dt><dd>Prioridade da rota. Menor ganha: Operadora A = 1, Operadora B = 2.</dd>
+    <dt>Rota recursiva</dt><dd>A rota da Operadora A só fica ativa se um IP da internet responder por ela. É o que detecta "modem ligado, internet caída".</dd>
+    <dt>Netwatch</dt><dd>Monitor que pinga a cada 15 s e tira a Operadora A do ar se a perda ou a latência ficarem ruins.</dd>
+    <dt>Masquerade (NAT)</dt><dd>Faz a rede interna sair para a internet com o IP da WAN.</dd>
+    <dt>Safe Mode</dt><dd>Botão no topo do Winbox. Se você perder o acesso por um erro, o MikroTik desfaz sozinho.</dd>
+  </dl>
+</details>
+
+<section class="step" id="t0" data-g="Antes">
+  <div class="step-h"><span class="step-n">T0</span><h3>Como usar o Terminal do Winbox</h3><label class="done-l"><input type="checkbox" id="chk-t0">feito</label></div>
+  <p class="why">Todo bloco marcado <b>RouterOS · Terminal</b> neste guia é colado aqui. Os blocos <b>PowerShell</b> e <b>CMD</b> são rodados no seu notebook.</p>
+  <div class="shot"><div class="shot-cap">Menu lateral › New Terminal</div>
+  <div class="wbscroll"><div class="wb" data-path="New Terminal" data-pins="1" data-host="192.168.88.1" data-ident="MikroTik">
+    <div class="wbw full"><div class="wbw-t">Terminal &lt;1&gt;<span>□ ✕</span></div>
+<div class="term">
+  MikroTik RouterOS 7.x                     https://www.mikrotik.com/
+
+Press F1 for help
+
+<span class="p">[admin@MikroTik] &gt;</span> /system package update check-for-updates <span class="pin">2</span>
+          channel: stable
+installed-version: 7.12.1
+   latest-version: 7.x.x
+           status: New version is available
+<span class="p">[admin@MikroTik] &gt;</span> <span class="cur"> </span></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span>Clique em <b>New Terminal</b> no menu da esquerda. Abre uma janela preta.</span></li>
+    <li><span class="pin">2</span><span>Cole com <kbd>Ctrl+V</kbd> ou botão direito › <b>Paste</b> e aperte <kbd>Enter</kbd>. Comandos em várias linhas podem ser colados de uma vez.</span></li>
+  </ol>
+  <div class="box tip"><b>Winbox 4</b><p>Se o seu Winbox tiver o visual escuro novo (versão 4), os menus têm os mesmos nomes e caminhos. Só a aparência muda.</p></div>
+</section>
+
+<section class="step" id="t1" data-g="Antes">
+  <div class="step-h"><span class="step-n">T1</span><h3>O que levar amanhã</h3><label class="done-l"><input type="checkbox" id="chk-t1">feito</label></div>
+  <ul class="checklist">
+    <li>Notebook com Winbox e o <code>failover.rsc</code></li>
+    <li>O hEX já preparado (Fase A) e a fonte dele</li>
+    <li>3 cabos curtos para o rack (operadoras e switch) e etiquetas</li>
+    <li>Um cabo longo para ligar o notebook no roteador de cada sala</li>
+    <li>Senha de admin dos roteadores Operadora A e Operadora B (costuma estar na etiqueta)</li>
+    <li>Senha de admin dos roteadores dos contêineres (se não tiver, reset de fábrica e a senha da etiqueta)</li>
+    <li>Nome e senha que o Wi-Fi único vai ter (sugestão: reaproveitar o mais usado hoje)</li>
+    <li>Lista de impressoras, ponto eletrônico, DVR ou servidor da empresa</li>
+  </ul>
+</section>
+
+<div class="phase-h" id="fase-a"><h2>Fase A</h2><span>em casa, hoje · ~40 min</span></div>
+<p class="intro">Tudo aqui é feito na sua mesa, com a sua internet. Se algo der errado, você tem tempo para resolver sem ninguém esperando.</p>
+
+<section class="step" id="a1" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A1</span><h3>Baixar o Winbox</h3><label class="done-l"><input type="checkbox" id="chk-a1">feito</label></div>
+  <p>Baixe no site oficial: <a href="https://mikrotik.com/download" target="_blank" rel="noopener">mikrotik.com/download</a>, seção <b>WinBox</b>, versão Windows 64-bit. É um executável só, não precisa instalar.</p>
+  <p>Na primeira vez que abrir, o Windows vai perguntar sobre o firewall. Clique em <b>Permitir acesso</b>. Sem isso, a aba Neighbors não encontra o MikroTik.</p>
+</section>
+
+<section class="step" id="a2" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A2</span><h3>Salvar o script no notebook</h3><label class="done-l"><input type="checkbox" id="chk-a2">feito</label></div>
+  <p class="why">Este é o arquivo que configura o MikroTik inteiro: portas, rede 172.16.10.x, DHCP, os dois links, failover, NAT, firewall e segurança. Clique em <b>Copiar</b> e depois rode o comando do PowerShell logo abaixo. Ele grava o conteúdo copiado como <code>failover.rsc</code> na sua Área de Trabalho, sem os caracteres invisíveis que o Bloco de Notas às vezes coloca e que quebram o script.</p>
+  <div class="code tall" data-k="rsc"><div class="code-h"><span>failover.rsc · script completo</span><button class="cp" type="button">Copiar</button></div><pre><code># =====================================================================
+#  MikroTik hEX (RB750Gr3) - Failover OPERADORA A (primario) / OPERADORA B
+#  RouterOS 7.x (&gt;= 7.4, recomendado ultima stable)
+#
+#  Portas:
+#    ether1 = OPERADORA A      (LAN do roteador da Operadora A -&gt; DHCP)
+#    ether2 = OPERADORA B  (LAN do roteador da Operadora B -&gt; DHCP)
+#    ether3..ether5 = LAN (APs / switch)
+#
+#  LAN: 172.16.10.0/24  (gateway 172.16.10.1)
+#
+#  Uso (recomendado): subir este arquivo em Files e resetar com:
+#    /system reset-configuration no-defaults=yes skip-backup=yes run-after-reset=failover.rsc
+#  O script roda sozinho no boot. Confira no Log: "failover.rsc aplicado com sucesso"
+# =====================================================================
+
+# Aguarda as interfaces subirem (necessario no run-after-reset)
+:delay 15s
+
+# ---------- Identidade / relogio ----------
+/system identity set name=MK-EMPRESA
+/system clock set time-zone-name=America/Sao_Paulo
+
+# ---------- Interfaces ----------
+/interface ethernet
+set [find default-name=ether1] name=ether1-OPA
+set [find default-name=ether2] name=ether2-OPB
+
+/interface bridge
+add name=bridge-LAN comment="LAN unificada"
+
+/interface bridge port
+add bridge=bridge-LAN interface=ether3
+add bridge=bridge-LAN interface=ether4
+add bridge=bridge-LAN interface=ether5
+
+/interface list
+add name=WAN
+add name=LAN
+
+/interface list member
+add list=WAN interface=ether1-OPA
+add list=WAN interface=ether2-OPB
+add list=LAN interface=bridge-LAN
+
+# ---------- LAN / DHCP / DNS ----------
+/ip address
+add address=172.16.10.1/24 interface=bridge-LAN comment=LAN
+
+/ip pool
+add name=pool-LAN ranges=172.16.10.100-172.16.10.250
+
+/ip dhcp-server
+add name=dhcp-LAN interface=bridge-LAN address-pool=pool-LAN lease-time=8h
+
+/ip dhcp-server network
+add address=172.16.10.0/24 gateway=172.16.10.1 dns-server=172.16.10.1
+
+# DNS do MikroTik. NAO usar aqui os IPs de monitoramento (208.67.222.222 / 9.9.9.9)
+/ip dns
+set servers=1.1.1.1,8.8.8.8 allow-remote-requests=yes cache-size=4096KiB
+
+# ---------- Rotas recursivas (failover por disponibilidade) ----------
+# Host de checagem da OPERADORA A: 208.67.222.222 (OpenDNS) - sempre sai pela Operadora A
+# Host de checagem da OPERADORA B: 9.9.9.9 (Quad9)        - sempre sai pela Operadora B
+# Gateways abaixo sao placeholders; o script do DHCP corrige sozinho.
+/ip route
+add dst-address=208.67.222.222/32 gateway=192.168.10.1 scope=10 comment=OPA-CHECK
+add dst-address=9.9.9.9/32 gateway=192.168.20.1 scope=10 comment=OPB-CHECK
+add dst-address=0.0.0.0/0 gateway=208.67.222.222 target-scope=11 check-gateway=ping distance=1 comment=OPA-DEFAULT
+add dst-address=0.0.0.0/0 gateway=9.9.9.9 target-scope=11 check-gateway=ping distance=2 comment=OPB-DEFAULT
+
+# ---------- WANs (DHCP client sem rota default) ----------
+# O script atualiza o gateway da rota de checagem sempre que o DHCP renova,
+# entao nao importa qual IP o roteador da operadora usa.
+/ip dhcp-client
+add interface=ether1-OPA add-default-route=no use-peer-dns=no use-peer-ntp=no comment=OPA \
+    script=":if (\$bound=1) do={ /ip route set [find where comment=\"OPA-CHECK\"] gateway=\$\"gateway-address\" }"
+add interface=ether2-OPB add-default-route=no use-peer-dns=no use-peer-ntp=no comment=OPB \
+    script=":if (\$bound=1) do={ /ip route set [find where comment=\"OPB-CHECK\"] gateway=\$\"gateway-address\" }"
+
+# ---------- NAT ----------
+/ip firewall nat
+add chain=srcnat out-interface=ether1-OPA action=masquerade comment="NAT OPA"
+add chain=srcnat out-interface=ether2-OPB action=masquerade comment="NAT OPB"
+
+# ---------- Firewall basico ----------
+/ip firewall filter
+add chain=input action=accept connection-state=established,related,untracked comment="IN: estabelecidas"
+add chain=input action=drop connection-state=invalid comment="IN: invalidas"
+add chain=input action=accept protocol=icmp comment="IN: ping"
+add chain=input action=accept in-interface-list=LAN comment="IN: gerencia/DNS/DHCP so pela LAN"
+add chain=input action=drop comment="IN: dropa o resto (WAN)"
+add chain=forward action=fasttrack-connection connection-state=established,related comment="FW: fasttrack"
+add chain=forward action=accept connection-state=established,related,untracked comment="FW: estabelecidas"
+add chain=forward action=drop connection-state=invalid comment="FW: invalidas"
+add chain=forward action=drop connection-state=new connection-nat-state=!dstnat in-interface-list=WAN comment="FW: bloqueia novas vindas da WAN"
+
+# ---------- Hardening ----------
+/ip service
+set telnet disabled=yes
+set ftp disabled=yes
+set www disabled=yes
+set api disabled=yes
+set api-ssl disabled=yes
+set winbox address=172.16.10.0/24
+set ssh address=172.16.10.0/24
+
+/tool mac-server set allowed-interface-list=LAN
+/tool mac-server mac-winbox set allowed-interface-list=LAN
+/ip neighbor discovery-settings set discover-interface-list=LAN
+
+# ---------- NTP ----------
+/system ntp client set enabled=yes
+/system ntp client servers
+add address=a.st1.ntp.br
+add address=b.st1.ntp.br
+
+# ---------- Netwatch (degradacao: perda/latencia) ----------
+# Se a Operadora A ficar com &gt;30% de perda ou media &gt;300ms, desativa a rota dela.
+# Em qualquer troca, limpa as conexoes para os apps reconectarem pelo link novo.
+# Fica por ultimo e protegido: se der erro de sintaxe, o resto ja foi aplicado.
+:do {
+/tool netwatch add name=OPA-MON type=icmp host=208.67.222.222 interval=15s packet-count=10 packet-interval=200ms thr-avg=300ms thr-max=2s thr-jitter=1s thr-stdev=500ms thr-loss-percent=30% down-script="/ip route disable [find where comment=\"OPA-DEFAULT\"]; :delay 1s; /ip firewall connection remove [find]; :log warning \"OPERADORA A FORA/DEGRADADA -&gt; usando OPERADORA B\"" up-script="/ip route enable [find where comment=\"OPA-DEFAULT\"]; :delay 1s; /ip firewall connection remove [find]; :log warning \"OPERADORA A OK -&gt; voltando para OPERADORA A\""
+:log info "NETWATCH OK"
+} on-error={ :log error "NETWATCH FALHOU - criar manualmente (ver guia)" }
+
+:log info "failover.rsc aplicado com sucesso"</code></pre></div>
+  <div class="code" data-k="ps"><div class="code-h"><span>PowerShell · grava o que foi copiado</span><button class="cp" type="button">Copiar</button></div><pre><code>[IO.File]::WriteAllText("$env:USERPROFILE\Desktop\failover.rsc", (Get-Clipboard -Raw))</code></pre></div>
+  <p>O comando lê o que está na área de transferência na hora em que roda. Por isso a ordem importa:</p>
+  <ol class="plain">
+    <li>Copie o bloco do <b>PowerShell</b> primeiro e cole no PowerShell, <b>sem apertar Enter</b>.</li>
+    <li>Volte aqui e copie o <b>script completo</b>.</li>
+    <li>Volte ao PowerShell e aperte <kbd>Enter</kbd>.</li>
+  </ol>
+  <div class="code" data-k="ps"><div class="code-h"><span>PowerShell · conferir o arquivo</span><button class="cp" type="button">Copiar</button></div><pre><code>Get-Content "$env:USERPROFILE\Desktop\failover.rsc" -TotalCount 3
+(Get-Content "$env:USERPROFILE\Desktop\failover.rsc").Count</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>A primeira linha começa com <code># =====</code> e o arquivo tem por volta de 140 linhas.</p></div>
+</section>
+
+<section class="step" id="a3" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A3</span><h3>Ligar o hEX e entrar pelo Winbox</h3><label class="done-l"><input type="checkbox" id="chk-a3">feito</label></div>
+  <div class="meta"><span class="chip">ether1 → <b>roteador da sua casa</b></span><span class="chip">ether2 → <b>notebook</b></span></div>
+  <p class="why">De fábrica o hEX já sai com internet pela ether1 e rede 192.168.88.x nas outras portas. Vamos usar isso só para atualizar. Tire o notebook do Wi-Fi para não confundir.</p>
+  <div class="shot"><div class="shot-cap">Tela inicial do Winbox</div>
+  <div class="wbscroll"><div class="wb wb-login">
+    <div class="wb-title"><span>WinBox (Addresses)</span><span class="ctl">— ☐ ✕</span></div>
+    <div class="wbl-menu">File &nbsp;&nbsp; Tools</div>
+    <div class="wbl-form">
+      <div class="wbf"><label>Connect To:</label><span class="in">48:A9:8A:1C:2E:40</span><span class="ck"><i></i>Keep Password</span></div>
+      <div class="wbf"><label>Login:</label><span class="in">admin<span class="pin">3</span></span><span class="ck"><i></i>Open In New Window</span></div>
+      <div class="wbf"><label>Password:</label><span class="in"></span><span></span></div>
+      <div class="wbl-btns"><span class="btn">Add/Set</span><span class="btn">Connect To RoMON</span><span class="btn pri">Connect</span><span class="pin">4</span></div>
+    </div>
+    <div class="wbw-tabs"><span>Managed</span><span class="on">Neighbors</span><span class="pin">1</span></div>
+    <div class="wbw-tool"><span class="btn">Refresh</span><span class="find">Find</span></div>
+    <table class="wbt"><thead><tr><th>MAC Address</th><th>IP Address</th><th>Identity</th><th>Version</th><th>Board</th><th>Uptime</th></tr></thead>
+    <tbody><tr class="sel"><td>48:A9:8A:1C:2E:40 <span class="pin">2</span></td><td>192.168.88.1</td><td>MikroTik</td><td>7.12.1 (stable)</td><td>RB750Gr3</td><td>00:02:41</td></tr></tbody></table>
+    <div class="wbw-s">1 item</div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span>Aba <b>Neighbors</b>. O hEX aparece em até 30 s depois de ligado.</span></li>
+    <li><span class="pin">2</span><span>Clique no <b>MAC Address</b>, não no IP. Conectar pelo MAC funciona mesmo quando o IP muda ou some.</span></li>
+    <li><span class="pin">3</span><span>Login <code>admin</code>. Senha <b>em branco</b> ou a impressa na <b>etiqueta</b> embaixo do hEX (modelos mais novos).</span></li>
+    <li><span class="pin">4</span><span><b>Connect</b>. Se pedir para trocar a senha, troque. Se aparecer uma janela de "Default Configuration", clique em <b>OK</b>.</span></li>
+  </ol>
+  <div class="box warn"><b>A lista Neighbors está vazia?</b><ul><li>Confira se o notebook está na <b>ether2</b> e a luz da porta acendeu.</li><li>Feche e abra o Winbox e aceite o firewall do Windows.</li><li>Desative outras placas de rede (VPN, VirtualBox) e tente de novo.</li></ul></div>
+</section>
+
+<section class="step" id="a4" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A4</span><h3>Atualizar o RouterOS</h3><label class="done-l"><input type="checkbox" id="chk-a4">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>System › Packages</b></span><span class="chip">reinicia sozinho · ~3 min</span></div>
+  <div class="shot"><div class="shot-cap">System › Packages › Check For Updates</div>
+  <div class="wbscroll"><div class="wb" data-path="System > Packages" data-pins="1,2" data-host="192.168.88.1" data-ident="MikroTik">
+    <div class="wbw"><div class="wbw-t">Package List<span>□ ✕</span></div>
+      <div class="wbw-tool"><span class="btn">Check For Updates</span><span class="pin">3</span><span class="btn">Enable</span><span class="btn">Disable</span><span class="btn">Uninstall</span><span class="btn">Check Installation</span></div>
+      <table class="wbt"><thead><tr><th>Name</th><th>Version</th><th>Build Time</th><th>Size</th></tr></thead><tbody><tr><td>routeros</td><td>7.12.1</td><td>Nov/17/2023 11:38:45</td><td>11.8 MiB</td></tr></tbody></table>
+      <div class="wbw-s">1 item</div></div>
+    <div class="wbw dlg"><div class="wbw-t">Check For Updates<span>□ ✕</span></div>
+      <div class="wbf-g"><div>
+        <div class="wbf"><label>Channel:</label><span class="in sel">stable<span class="pin">4</span></span></div>
+        <div class="wbf"><label>Installed Version:</label><span class="in ro">7.12.1</span></div>
+        <div class="wbf"><label>Latest Version:</label><span class="in ro">7.x.x (a mais nova)</span></div>
+        <div class="msg">New version is available</div>
+      </div>
+      <div class="btncol"><span class="btn">OK</span><span class="btn">Download</span><span class="btn pri">Download&amp;Install<span class="pin">5</span></span></div></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>System</b> no menu da esquerda.</span></li>
+    <li><span class="pin">2</span><span><b>Packages</b>.</span></li>
+    <li><span class="pin">3</span><span><b>Check For Updates</b>.</span></li>
+    <li><span class="pin">4</span><span>Channel <b>stable</b>.</span></li>
+    <li><span class="pin">5</span><span><b>Download&amp;Install</b>. O hEX baixa, reinicia e o Winbox desconecta. Espere uns 3 minutos e conecte de novo pelo MAC.</span></li>
+  </ol>
+  <p>Mesma coisa pelo Terminal:</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal</span><button class="cp" type="button">Copiar</button></div><pre><code>/system package update set channel=stable
+/system package update check-for-updates
+/system package update install</code></pre></div>
+  <div class="box warn"><b>Se a versão instalada começar com 6.</b><p>Primeiro escolha o channel <code>upgrade</code> e faça Download&amp;Install. Isso leva para a versão 7. Depois de reiniciar, repita com <code>stable</code>.</p></div>
+  <div class="box ok"><b>Você deve ver</b><p>Depois de reconectar, a coluna <b>Version</b> na aba Neighbors mostra a versão nova, 7.something, maior que 7.4.</p></div>
+</section>
+
+<section class="step" id="a5" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A5</span><h3>Atualizar o firmware da placa</h3><label class="done-l"><input type="checkbox" id="chk-a5">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>System › RouterBOARD</b></span><span class="chip">depois: <b>System › Reboot</b></span></div>
+  <p class="why">O RouterOS é o sistema; o firmware é o "BIOS" da placa. Os dois devem ficar na mesma versão.</p>
+  <div class="shot"><div class="shot-cap">System › RouterBOARD</div>
+  <div class="wbscroll"><div class="wb" data-path="System > RouterBOARD" data-pins="1,2" data-host="192.168.88.1" data-ident="MikroTik">
+    <div class="wbw"><div class="wbw-t">RouterBOARD<span>□ ✕</span></div>
+      <div class="wbf-g"><div>
+        <div class="wbf"><label></label><span class="ck on"><i></i>RouterBOARD</span></div>
+        <div class="wbf"><label>Model:</label><span class="in ro">RB750Gr3</span></div>
+        <div class="wbf"><label>Serial Number:</label><span class="in ro">HC1A2B3C4D5</span></div>
+        <div class="wbf"><label>Firmware Type:</label><span class="in ro">mt7621L</span></div>
+        <div class="wbf"><label>Current Firmware:</label><span class="in ro">7.12.1<span class="pin">3</span></span></div>
+        <div class="wbf"><label>Upgrade Firmware:</label><span class="in ro">7.x.x</span></div>
+      </div>
+      <div class="btncol"><span class="btn">OK</span><span class="btn">Cancel</span><span class="btn">Apply</span><span class="btn">Settings...</span><span class="btn">USB Power Reset</span><span class="btn pri">Upgrade<span class="pin">4</span></span></div></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>System</b>.</span></li>
+    <li><span class="pin">2</span><span><b>RouterBOARD</b>.</span></li>
+    <li><span class="pin">3</span><span>Se <b>Current</b> for diferente de <b>Upgrade Firmware</b>, precisa atualizar.</span></li>
+    <li><span class="pin">4</span><span><b>Upgrade</b> › confirme com <b>Yes</b>. Depois vá em <b>System › Reboot</b>. Só vale depois de reiniciar.</span></li>
+  </ol>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal</span><button class="cp" type="button">Copiar</button></div><pre><code>/system routerboard upgrade
+/system reboot</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>Após o reboot, em System › RouterBOARD, <b>Current Firmware</b> e <b>Upgrade Firmware</b> iguais.</p></div>
+</section>
+
+<section class="step" id="a6" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A6</span><h3>Enviar o script para o MikroTik</h3><label class="done-l"><input type="checkbox" id="chk-a6">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>Files</b></span></div>
+  <div class="shot"><div class="shot-cap">Files › arrastar o arquivo da Área de Trabalho</div>
+  <div class="wbscroll"><div class="wb" data-path="Files" data-pins="1" data-host="192.168.88.1" data-ident="MikroTik">
+    <div class="wbw full"><div class="wbw-t">File List<span>□ ✕</span></div>
+      <div class="wbw-tool"><span class="tb rem">−</span><span class="tb flt">⏷</span><span class="btn">Backup</span><span class="btn">Restore</span><span class="btn">Upload...</span><span class="find">Find</span></div>
+      <table class="wbt"><thead><tr><th>File Name</th><th>Type</th><th>Size</th><th>Creation Time</th></tr></thead>
+      <tbody><tr class="sel"><td>failover.rsc <span class="pin">3</span></td><td>.rsc file</td><td>5.4 KiB</td><td>Sep/25/2026 21:14:08</td></tr>
+      <tr><td>skins</td><td>directory</td><td></td><td>Jan/02/1970 00:00:10</td></tr></tbody></table>
+      <div class="wbw-s">2 items</div></div>
+    <div class="ghost"><span class="doc"></span>failover.rsc <span style="color:#555">← arraste da Área de Trabalho e solte na lista</span><span class="pin">2</span></div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span>Clique em <b>Files</b>.</span></li>
+    <li><span class="pin">2</span><span>Arraste o <code>failover.rsc</code> da Área de Trabalho para dentro da janela.</span></li>
+    <li><span class="pin">3</span><span>Ele aparece na lista na raiz, fora de pastas. O nome precisa ser exatamente <code>failover.rsc</code>.</span></li>
+  </ol>
+</section>
+
+<section class="step" id="a7" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A7</span><h3>Resetar e aplicar o script no boot</h3><label class="done-l"><input type="checkbox" id="chk-a7">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>System › Reset Configuration</b></span></div>
+  <p class="why">O reset apaga a configuração de fábrica e, no boot, roda o seu script sozinho. É mais seguro que colar no Terminal, porque a queda do Winbox no meio do processo não interrompe nada. O arquivo em Files não é apagado pelo reset.</p>
+  <div class="shot"><div class="shot-cap">System › Reset Configuration</div>
+  <div class="wbscroll"><div class="wb" data-path="System > Reset Configuration" data-pins="1,2" data-host="192.168.88.1" data-ident="MikroTik">
+    <div class="wbw"><div class="wbw-t">Reset Configuration<span>□ ✕</span></div>
+      <div class="wbf-g"><div>
+        <div class="wbf"><label></label><span class="ck"><i></i>Keep User Configuration</span></div>
+        <div class="wbf"><label></label><span class="ck"><i></i>CAPS Mode</span></div>
+        <div class="wbf"><label></label><span class="ck on"><i></i>No Default Configuration<span class="pin">3</span></span></div>
+        <div class="wbf"><label></label><span class="ck on"><i></i>Do Not Backup<span class="pin">4</span></span></div>
+        <div class="wbf"><label>Run After Reset:</label><span class="in sel">failover.rsc<span class="pin">5</span></span></div>
+      </div>
+      <div class="btncol"><span class="btn pri">Reset Configuration<span class="pin">6</span></span><span class="btn">Cancel</span></div></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>System</b>.</span></li>
+    <li><span class="pin">2</span><span><b>Reset Configuration</b>.</span></li>
+    <li><span class="pin">3</span><span>Marque <b>No Default Configuration</b>.</span></li>
+    <li><span class="pin">4</span><span>Marque <b>Do Not Backup</b>.</span></li>
+    <li><span class="pin">5</span><span>Em <b>Run After Reset</b>, escolha <code>failover.rsc</code>.</span></li>
+    <li><span class="pin">6</span><span><b>Reset Configuration</b> › <b>Yes</b>. O hEX reinicia.</span></li>
+  </ol>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · mesmo efeito</span><button class="cp" type="button">Copiar</button></div><pre><code>/system reset-configuration no-defaults=yes skip-backup=yes run-after-reset=failover.rsc</code></pre></div>
+  <div class="box warn"><b>Agora troque o cabo do notebook</b><p>Depois do reset, a <b>ether2</b> vira a porta da Operadora B. Passe o notebook para a <b>ether3</b>. A ether1 continua no roteador da sua casa, fazendo o papel da Operadora A.</p></div>
+</section>
+
+<section class="step" id="a8" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A8</span><h3>Conferir se o script foi aplicado</h3><label class="done-l"><input type="checkbox" id="chk-a8">feito</label></div>
+  <div class="meta"><span class="chip">notebook na <b>ether3</b></span><span class="chip">Winbox: <b>172.16.10.1</b> › <b>Log</b></span></div>
+  <p>Espere 2 minutos depois do reset. Renove o IP do notebook e confira se ele ganhou um endereço 172.16.10.x:</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · renovar IP e conferir</span><button class="cp" type="button">Copiar</button></div><pre><code>ipconfig /release
+ipconfig /renew
+ipconfig | findstr /i "IPv4 Gateway"</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p><code>Endereço IPv4 ... 172.16.10.1xx</code> e <code>Gateway Padrão ... 172.16.10.1</code>.</p></div>
+  <p>Conecte o Winbox em <code>172.16.10.1</code> (ou pelo MAC em Neighbors), usuário <code>admin</code> com a senha de fábrica, e abra o <b>Log</b>:</p>
+  <div class="shot"><div class="shot-cap">Log · as linhas que importam</div>
+  <div class="wbscroll"><div class="wb" data-path="Log" data-pins="1">
+    <div class="wbw full"><div class="wbw-t">Log<span>□ ✕</span></div>
+      <div class="wbw-tool"><span class="btn">Freeze</span><span class="find">Find</span></div>
+      <table class="wbt"><thead><tr><th>Time</th><th>Buffer</th><th>Topics</th><th>Message</th></tr></thead>
+      <tbody>
+      <tr><td>21:19:02</td><td>memory</td><td>system, info</td><td>router rebooted</td></tr>
+      <tr><td>21:19:18</td><td>memory</td><td>dhcp, info</td><td>dhcp-client on ether1-OPA got IP address 192.168.1.23</td></tr>
+      <tr><td>21:19:18</td><td>memory</td><td>script, info</td><td>NETWATCH OK <span class="pin">2</span></td></tr>
+      <tr class="sel"><td>21:19:18</td><td>memory</td><td>script, info</td><td>failover.rsc aplicado com sucesso <span class="pin">3</span></td></tr>
+      <tr class="warnr"><td>21:19:34</td><td>memory</td><td>script, warning</td><td>OPERADORA A OK -&gt; voltando para OPERADORA A</td></tr>
+      </tbody></table>
+      <div class="wbw-s">5 items</div></div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span>Clique em <b>Log</b>.</span></li>
+    <li><span class="pin">2</span><span><b>NETWATCH OK</b>: o monitor de latência e perda foi criado.</span></li>
+    <li><span class="pin">3</span><span><b>failover.rsc aplicado com sucesso</b>: o script rodou até o fim.</span></li>
+  </ol>
+  <p>Teste a internet no notebook. Em casa, ela sai pela ether1:</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · teste de navegação</span><button class="cp" type="button">Copiar</button></div><pre><code>ping 8.8.8.8
+nslookup google.com 172.16.10.1
+curl.exe -s https://ifconfig.me/ip</code></pre></div>
+  <div class="box bad"><b>Se não aparecer "aplicado com sucesso"</b><ul>
+    <li>O script parou em alguma linha. Abra o <b>New Terminal</b> e rode <code>/import failover.rsc verbose=yes</code>: a linha com erro aparece em vermelho. Me mande o print.</li>
+    <li>Para refazer do zero: corrija, suba o arquivo de novo (A6) e repita o reset (A7).</li>
+    <li>Se aparecer <b>NETWATCH FALHOU</b>, está tudo certo com o resto. Use o comando do item "Netwatch falhou" em Problemas comuns.</li>
+  </ul></div>
+  <div class="box tip"><b>Normal em casa</b><p>O DHCP Client da <b>ether2-OPB</b> fica em <code>searching...</code>, porque não tem nada ligado nela. Na empresa ele vai pegar IP.</p></div>
+</section>
+
+<section class="step" id="a9" data-g="Fase A · em casa">
+  <div class="step-h"><span class="step-n">A9</span><h3>Criar seu usuário e desativar o admin</h3><label class="done-l"><input type="checkbox" id="chk-a9">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>System › Users</b></span></div>
+  <div class="shot"><div class="shot-cap">System › Users</div>
+  <div class="wbscroll"><div class="wb" data-path="System > Users" data-pins="1,2">
+    <div class="wbw"><div class="wbw-t">User List<span>□ ✕</span></div>
+      <div class="wbw-tabs"><span class="on">Users</span><span>Groups</span><span>SSH Keys</span><span>Active Users</span></div>
+      <div class="wbw-tool"><span class="tb add">+</span><span class="pin">3</span><span class="tb rem">−</span><span class="tb en">✓</span><span class="tb dis">✕</span><span class="pin">6</span><span class="tb cm">▭</span><span class="tb flt">⏷</span></div>
+      <table class="wbt"><thead><tr><th>Name</th><th>Group</th><th>Allowed Address</th><th>Last Logged In</th></tr></thead>
+      <tbody><tr class="sel"><td>admin <span class="pin">5</span></td><td>full</td><td></td><td>Sep/25/2026 21:20:11</td></tr><tr><td>suporte</td><td>full</td><td></td><td></td></tr></tbody></table>
+      <div class="wbw-s">2 items</div></div>
+    <div class="wbw dlg"><div class="wbw-t">New User<span>□ ✕</span></div>
+      <div class="wbf-g"><div>
+        <div class="wbf"><label>Name:</label><span class="in">suporte</span></div>
+        <div class="wbf"><label>Group:</label><span class="in sel">full</span></div>
+        <div class="wbf"><label>Allowed Address:</label><span class="in"></span></div>
+        <div class="wbf"><label>Password:</label><span class="in">••••••••••••</span></div>
+        <div class="wbf"><label>Confirm Password:</label><span class="in">••••••••••••</span></div>
+      </div><div class="btncol"><span class="btn pri">OK<span class="pin">4</span></span><span class="btn">Cancel</span><span class="btn">Apply</span></div></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>System</b>.</span></li>
+    <li><span class="pin">2</span><span><b>Users</b>.</span></li>
+    <li><span class="pin">3</span><span><b>+</b> (azul) para criar.</span></li>
+    <li><span class="pin">4</span><span>Nome, grupo <b>full</b>, senha forte › <b>OK</b>. Anote a senha num lugar seguro.</span></li>
+    <li><span class="pin">5</span><span>Desconecte, entre de novo com o <b>suporte</b> e selecione o <b>admin</b>.</span></li>
+    <li><span class="pin">6</span><span><b>✕</b> (vermelho) desativa o admin sem apagá-lo.</span></li>
+  </ol>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · troque a senha antes de rodar</span><button class="cp" type="button">Copiar</button></div><pre><code>/user add name=suporte group=full password="TROQUE-ESTA-SENHA"</code></pre></div>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · já logado como suporte</span><button class="cp" type="button">Copiar</button></div><pre><code>/user disable admin</code></pre></div>
+  <div class="box ok"><b>Fase A pronta</b><p>Desligue o hEX. Ele vai para a empresa configurado e testado.</p></div>
+</section>
+
+<div class="phase-h" id="fase-b"><h2>Fase B</h2><span>na empresa · ~15 min + ~10 min por sala</span></div>
+<p class="intro">A internet de todos cai só uma vez, por uns 2 minutos, no passo B2. Depois do B3 todas as salas já navegam com failover. A conversão dos roteadores das salas (B4) é feita uma sala por vez e, se o tempo apertar, pode ficar para outro dia.</p>
+
+<section class="step" id="b1" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B1</span><h3>Levantamento rápido</h3><label class="done-l"><input type="checkbox" id="chk-b1">feito</label></div>
+  <div class="meta"><span class="chip">~10 min</span><span class="chip">nada muda ainda</span></div>
+  <p><b>1. Foto do rack.</b> Antes de tocar em qualquer cabo, fotografe o switch de 24 portas e etiquete os cabos que vêm dos roteadores Operadora A e Operadora B. É o seu caminho de volta.</p>
+  <p><b>2. Faixa de IP de cada operadora.</b> Ligue o notebook direto no roteador da Operadora A (cabo ou Wi-Fi) e rode o comando abaixo. Depois repita no da Operadora B.</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · rode uma vez em cada operadora</span><button class="cp" type="button">Copiar</button></div><pre><code>ipconfig | findstr /i "IPv4 Gateway"</code></pre></div>
+  <div class="box bad"><b>Se as duas faixas forem iguais</b><p>Por exemplo, as duas em 192.168.1.x: entre na página do roteador da <b>Operadora B</b> e mude a LAN dele para <code>192.168.50.1</code>. Com faixas iguais, o MikroTik não sabe para qual lado mandar.</p></div>
+  <p><b>3. Como cada sala está hoje.</b> Num PC de cada contêiner, rode:</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · num PC dentro da sala</span><button class="cp" type="button">Copiar</button></div><pre><code>ipconfig | findstr /i "IPv4 Gateway"
+tracert -d -h 3 8.8.8.8</code></pre></div>
+  <p>O primeiro salto do <code>tracert</code> é o roteador da sala e o segundo é o da operadora. Assim você sabe por qual link a sala sai hoje e confirma que o roteador da sala está em modo roteador (é o que muda no B4). Anote a marca e o modelo do roteador de cada sala e se você tem a senha de admin dele.</p>
+  <p><b>4. Aparelhos com IP fixo.</b> Impressoras, relógio de ponto, DVR ou servidor costumam ter IP fixo e vão sumir depois da troca. Descubra quem está em cada rede (troque <code>192.168.15</code> pela faixa encontrada):</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · varredura rápida (~30 s) + lista de MACs</span><button class="cp" type="button">Copiar</button></div><pre><code>for /L %i in (1,1,254) do @ping -n 1 -w 100 192.168.10.%i | find "TTL"
+arp -a</code></pre></div>
+  <p>Anote nome, IP antigo e MAC de cada aparelho fixo. Vão virar reservas no passo B5. Se preferir, o Advanced IP Scanner faz o mesmo e já mostra nomes e fabricantes.</p>
+</section>
+
+<section class="step" id="b2" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B2</span><h3>Colocar o MikroTik no rack</h3><label class="done-l"><input type="checkbox" id="chk-b2">feito</label></div>
+  <div class="meta"><span class="chip">~5 min</span><span class="chip">internet cai para todos por ~2 min</span></div>
+  <ol class="plain">
+    <li>Desligue o <b>Wi-Fi</b> dos roteadores Operadora A e Operadora B, pela página de cada um. Não mexa em mais nada neles.</li>
+    <li>Tire do switch o cabo que vem do roteador <b>Operadora A</b> e ligue na <b>ether1</b> do hEX.</li>
+    <li>Tire do switch o cabo que vem do roteador <b>Operadora B</b> e ligue na <b>ether2</b>.</li>
+    <li>Ligue um cabo curto da <b>ether3</b> do hEX a uma porta livre do switch (pode ser a que a Operadora A usava).</li>
+    <li>Ligue o hEX. Em 1 a 2 minutos as salas voltam a ter internet.</li>
+  </ol>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Porta do hEX</th><th>Vai para</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>ether1</td><td>Porta <b>LAN</b> do roteador da Operadora A</td><td>principal</td></tr>
+      <tr><td>ether2</td><td>Porta <b>LAN</b> do roteador da Operadora B</td><td>reserva</td></tr>
+      <tr><td>ether3</td><td>Switch de 24 portas</td><td>único cabo que leva internet ao switch</td></tr>
+      <tr><td>ether4</td><td>Seu notebook</td><td>para configurar e testar</td></tr>
+      <tr><td>ether5</td><td>livre</td><td></td></tr>
+    </tbody></table></div>
+  <div class="box warn"><b>Regra de ouro</b><p>O switch de 24 portas passa a receber internet por <b>um único cabo</b>: o da ether3. Nenhum roteador de operadora pode continuar ligado no switch, senão volta a ter dois DHCPs na rede e a bagunça de hoje.</p></div>
+  <h4>Plano de IPs</h4>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Faixa</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td>172.16.10.1</td><td>MikroTik (gateway e DNS de todos)</td></tr>
+      <tr><td>172.16.10.11 – .49</td><td>Roteador de cada contêiner em modo AP: 10 + número da sala (sala 1 = .11, sala 7 = .17)</td></tr>
+      <tr><td>172.16.10.50 – .79</td><td>Impressoras, ponto, DVR, servidor (reserva no DHCP)</td></tr>
+      <tr><td>172.16.10.100 – .250</td><td>DHCP automático para PCs e celulares (151 endereços)</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="step" id="b3" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B3</span><h3>Conferir os dois links</h3><label class="done-l"><input type="checkbox" id="chk-b3">feito</label></div>
+  <div class="meta"><span class="chip">Winbox: <b>IP › DHCP Client</b></span><span class="chip">Winbox: <b>IP › Routes</b></span></div>
+  <div class="shot"><div class="shot-cap">IP › DHCP Client</div>
+  <div class="wbscroll"><div class="wb" data-path="IP > DHCP Client" data-pins="1,2" data-user="suporte">
+    <div class="wbw full"><div class="wbw-t">DHCP Client<span>□ ✕</span></div>
+      <div class="wbw-tabs"><span class="on">DHCP Client</span><span>DHCP Client Options</span></div>
+      <div class="wbw-tool"><span class="tb add">+</span><span class="tb rem">−</span><span class="tb en">✓</span><span class="tb dis">✕</span><span class="tb cm">▭</span><span class="tb flt">⏷</span><span class="btn">Release</span><span class="btn">Renew</span></div>
+      <table class="wbt"><thead><tr><th>Interface</th><th>Use Peer DNS</th><th>Add Default Route</th><th>IP Address</th><th>Expires After</th><th>Status</th></tr></thead>
+      <tbody>
+      <tr class="cmt"><td colspan="6">;;; OPA</td></tr>
+      <tr><td>ether1-OPA</td><td>no</td><td>no</td><td>192.168.10.23/24</td><td>03:57:10</td><td>bound <span class="pin">3</span></td></tr>
+      <tr class="cmt"><td colspan="6">;;; OPB</td></tr>
+      <tr><td>ether2-OPB</td><td>no</td><td>no</td><td>192.168.20.105/24</td><td>23:59:02</td><td>bound</td></tr>
+      </tbody></table>
+      <div class="wbw-s">2 items</div></div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>IP</b>.</span></li>
+    <li><span class="pin">2</span><span><b>DHCP Client</b>.</span></li>
+    <li><span class="pin">3</span><span>As duas linhas precisam estar em <b>bound</b>, com IP da faixa de cada roteador.</span></li>
+  </ol>
+  <div class="shot"><div class="shot-cap">IP › Routes · como deve ficar</div>
+  <div class="wbscroll"><div class="wb" data-path="IP > Routes" data-pins="1,2" data-user="suporte">
+    <div class="wbw full"><div class="wbw-t">Route List<span>□ ✕</span></div>
+      <div class="wbw-tabs"><span class="on">Routes</span><span>Nexthops</span><span>Rules</span><span>VRF</span></div>
+      <div class="wbw-tool"><span class="tb add">+</span><span class="tb rem">−</span><span class="tb en">✓</span><span class="tb dis">✕</span><span class="tb cm">▭</span><span class="tb flt">⏷</span><span class="find">Find</span></div>
+      <table class="wbt"><thead><tr><th></th><th>Dst. Address</th><th>Gateway</th><th>Distance</th></tr></thead>
+      <tbody>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPA-DEFAULT</td></tr>
+      <tr class="sel"><td class="fl">AS</td><td>0.0.0.0/0 <span class="pin">3</span></td><td>208.67.222.222 recursive via 192.168.10.1 ether1-OPA</td><td>1</td></tr>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPB-DEFAULT</td></tr>
+      <tr class="inact"><td class="fl">S</td><td>0.0.0.0/0 <span class="pin">4</span></td><td>9.9.9.9</td><td>2</td></tr>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPA-CHECK</td></tr>
+      <tr><td class="fl">AS</td><td>208.67.222.222</td><td>192.168.10.1 reachable ether1-OPA</td><td>1</td></tr>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPB-CHECK</td></tr>
+      <tr><td class="fl">AS</td><td>9.9.9.9</td><td>192.168.20.1 reachable ether2-OPB</td><td>1</td></tr>
+      <tr><td class="fl">DAc</td><td>172.16.10.0/24</td><td>bridge-LAN</td><td>0</td></tr>
+      <tr><td class="fl">DAc</td><td>192.168.20.0/24</td><td>ether2-OPB</td><td>0</td></tr>
+      <tr><td class="fl">DAc</td><td>192.168.10.0/24</td><td>ether1-OPA</td><td>0</td></tr>
+      </tbody></table>
+      <div class="wbw-s">7 items</div></div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">3</span><span><b>OPA-DEFAULT</b> com a letra <b>A</b> (ativa). Todo o tráfego sai pela Operadora A.</span></li>
+    <li><span class="pin">4</span><span><b>OPB-DEFAULT</b> sem o A, em azul. É o normal: ela está de reserva e assume se a Operadora A cair.</span></li>
+  </ol>
+  <p style="font-size:14px;color:var(--muted)">Letras: <b>A</b> = ativa, <b>S</b> = estática (criada pelo script), <b>D</b> = dinâmica, <b>c</b> = rede conectada direto, <b>X</b> = desativada.</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · conferência rápida</span><button class="cp" type="button">Copiar</button></div><pre><code>/ip dhcp-client print
+/ip route print where comment~"DEFAULT|CHECK"
+/tool netwatch print
+/tool fetch url="https://ifconfig.me/ip" output=user</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>O último comando mostra o IP público da <b>Operadora A</b>. Anote para comparar no teste de failover.</p></div>
+  <div class="box tip"><b>Neste ponto todas as salas já navegam</b><p>Os roteadores das salas, ainda em modo roteador, pegam IP do MikroTik pela WAN e saem pela Operadora A com failover. Falta as salas se enxergarem, e isso vem no B4. Se alguma sala ficou sem internet, veja "Sala sem internet depois da troca" em Problemas comuns.</p></div>
+</section>
+
+<section class="step" id="b4" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B4</span><h3>Converter o roteador de cada contêiner em AP</h3><label class="done-l"><input type="checkbox" id="chk-b4">feito</label></div>
+  <div class="meta"><span class="chip">~10 min por sala</span><span class="chip">uma sala por vez</span><span class="chip">só aquela sala fica sem rede</span></div>
+  <p class="why">Hoje o roteador de cada sala recebe a internet pela porta WAN e cria uma rede própria lá dentro, com NAT. Por isso as salas não se enxergam. Em modo AP ele deixa de ser roteador: vira só a antena Wi-Fi e as portas de rede da sala, dentro da rede 172.16.10.x.</p>
+  <div class="tw"><table class="t">
+    <thead><tr><th>No roteador da sala</th><th>Hoje</th><th>Depois</th></tr></thead>
+    <tbody>
+      <tr><td>Cabo do switch</td><td>porta WAN / Internet</td><td><b>porta LAN</b> (1 a 4)</td></tr>
+      <tr><td>IP do roteador</td><td>192.168.20.1 ou parecido</td><td><b>172.16.10.1N</b> (N = nº da sala)</td></tr>
+      <tr><td>Servidor DHCP</td><td>ligado</td><td><b>desligado</b></td></tr>
+      <tr><td>Wi-Fi</td><td>nome próprio</td><td><b>nome e senha únicos</b>, iguais em todas as salas</td></tr>
+    </tbody></table></div>
+  <h4>Ordem que não te deixa sem acesso</h4>
+  <ol class="plain">
+    <li>Ligue o notebook por cabo numa porta <b>LAN</b> do roteador da sala e abra a página dele (o gateway que o <code>ipconfig</code> mostrar; costuma ser 192.168.20.1, 192.168.1.1 ou tplinkwifi.net).</li>
+    <li>Se existir <b>Modo de operação › Access Point</b> (comum em TP-Link, Intelbras e Mercusys), use: ele já desliga o DHCP e o NAT. Defina o IP de LAN e pule para o item 4.</li>
+    <li>Sem esse modo, faça à mão:
+      <ul>
+        <li><b>LAN</b>: IP <code>172.16.10.1N</code>, máscara <code>255.255.255.0</code>. Se pedir gateway e DNS, use <code>172.16.10.1</code>.</li>
+        <li><b>DHCP</b>: desativar o servidor.</li>
+      </ul></li>
+    <li><b>Wi-Fi</b>: o SSID e a senha únicos, WPA2-PSK (AES). No 2.4 GHz, alterne os canais 1, 6 e 11 entre salas vizinhas. Salve. A página vai parar de responder, e isso é normal.</li>
+    <li>Passe o cabo que vem do switch da porta <b>WAN</b> para uma porta <b>LAN</b>. A porta WAN fica vazia.</li>
+    <li>Renove o IP do notebook e confira:</li>
+  </ol>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · troque 11 pelo IP da sala</span><button class="cp" type="button">Copiar</button></div><pre><code>ipconfig /release
+ipconfig /renew
+ipconfig /all | findstr /i "IPv4 Gateway DHCP"
+ping 172.16.10.11
+curl.exe -s https://ifconfig.me/ip</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>IP <code>172.16.10.1xx</code>, gateway <code>172.16.10.1</code> e <b>Servidor DHCP</b> <code>172.16.10.1</code>. O roteador da sala responde no IP novo e a internet funciona.</p></div>
+  <div class="box bad"><b>Servidor DHCP diferente de 172.16.10.1?</b><p>Algum roteador ficou com o DHCP ligado e está distribuindo IP errado, que é exatamente o problema de hoje. O IP mostrado no <code>ipconfig</code> indica qual é. Entre nele e desligue o DHCP.</p></div>
+  <p>Para o MikroTik avisar sozinho se aparecer um DHCP intruso em qualquer sala:</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · alerta de DHCP intruso no Log</span><button class="cp" type="button">Copiar</button></div><pre><code>/ip dhcp-server alert add interface=bridge-LAN alert-timeout=1h on-alert=":log warning \"DHCP INTRUSO na rede - verificar roteadores das salas\""</code></pre></div>
+  <div class="box tip"><b>Sem a senha do roteador da sala?</b><p>Com ele ligado, segure o botão reset por uns 10 s. Ele volta à configuração de fábrica, com a senha da etiqueta. Depois configure do zero seguindo os itens acima.</p></div>
+  <div class="box tip"><b>Contêiner é metálico</b><p>O sinal fica bem preso dentro de cada sala, então a interferência entre salas é pequena. Com o mesmo nome de Wi-Fi em todas, quem anda de uma sala para outra reconecta sozinho em poucos segundos. Não é mesh, mas acaba a confusão de "qual rede eu uso".</p></div>
+</section>
+
+<section class="step" id="b5" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B5</span><h3>Impressoras e aparelhos fixos</h3><label class="done-l"><input type="checkbox" id="chk-b5">feito</label></div>
+  <div class="meta"><span class="chip">use a lista do B1</span></div>
+  <ol class="plain">
+    <li>Reinicie cada impressora ou aparelho fixo para ele pegar IP novo do MikroTik.</li>
+    <li>Se algum tiver IP fixo configurado no próprio aparelho, mude para DHCP no painel dele. Se não der, configure um IP entre <code>172.16.10.50</code> e <code>.79</code>, com gateway e DNS <code>172.16.10.1</code>.</li>
+    <li>Reserve o IP no MikroTik para ele nunca mudar:</li>
+  </ol>
+  <h4>Reservar IP para as impressoras</h4>
+  <div class="shot"><div class="shot-cap">IP › DHCP Server › Leases › botão direito › Make Static</div>
+  <div class="wbscroll"><div class="wb" data-path="IP > DHCP Server" data-pins="1,2" data-user="suporte">
+    <div class="wbw full" style="position:relative"><div class="wbw-t">DHCP Server<span>□ ✕</span></div>
+      <div class="wbw-tabs"><span>DHCP</span><span>Networks</span><span class="on">Leases</span><span class="pin">3</span><span>Options</span><span>Option Sets</span><span>Alerts</span></div>
+      <div class="wbw-tool"><span class="tb add">+</span><span class="tb rem">−</span><span class="tb en">✓</span><span class="tb dis">✕</span><span class="tb cm">▭</span><span class="tb flt">⏷</span><span class="btn">Check Status</span><span class="find">Find</span></div>
+      <table class="wbt"><thead><tr><th></th><th>Address</th><th>MAC Address</th><th>Server</th><th>Active Host Name</th><th>Expires After</th><th>Status</th></tr></thead>
+      <tbody>
+      <tr class="sel"><td class="fl">D</td><td>172.16.10.187 <span class="pin">4</span></td><td>64:EB:8C:12:34:56</td><td>dhcp-LAN</td><td>IMPRESSORA-01</td><td>07:42:10</td><td>bound</td></tr>
+      <tr><td class="fl">D</td><td>172.16.10.192</td><td>3C:52:82:AA:10:4F</td><td>dhcp-LAN</td><td>PC-EXEMPLO</td><td>07:51:33</td><td>bound</td></tr>
+      <tr><td class="fl">D</td><td>172.16.10.201</td><td>B8:27:EB:5D:90:11</td><td>dhcp-LAN</td><td>RECEPCAO-NB</td><td>07:58:02</td><td>bound</td></tr>
+      </tbody></table>
+      <div class="wbw-s">3 items</div>
+      <div class="ctx" style="left:260px;top:118px"><div class="on">Make Static <span class="pin">5</span></div><div>Check Status</div><hr><div>Copy</div><div>Remove</div></div>
+    </div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>IP</b>.</span></li>
+    <li><span class="pin">2</span><span><b>DHCP Server</b>.</span></li>
+    <li><span class="pin">3</span><span>Aba <b>Leases</b>. Confira pelo MAC anotado no B1.</span></li>
+    <li><span class="pin">4</span><span>Botão direito na impressora.</span></li>
+    <li><span class="pin">5</span><span><b>Make Static</b>. Depois dê dois cliques na linha, troque <b>Address</b> para <code>172.16.10.50</code> e clique em <b>OK</b>. Reinicie a impressora.</span></li>
+  </ol>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · troque o nome e o IP</span><button class="cp" type="button">Copiar</button></div><pre><code>/ip dhcp-server lease print
+/ip dhcp-server lease make-static [find where host-name="IMPRESSORA-01"]
+/ip dhcp-server lease set [find where host-name="IMPRESSORA-01"] address=172.16.10.50 comment="Impressora recepcao"</code></pre></div>
+  <h4>Apontar os PCs para o IP novo da impressora</h4>
+  <p>Em vez de reinstalar a impressora, troque só a porta. Rode em cada PC que imprime:</p>
+  <div class="code" data-k="psa"><div class="code-h"><span>PowerShell (Administrador) · ver o nome exato da impressora</span><button class="cp" type="button">Copiar</button></div><pre><code>Get-Printer | Select-Object Name, PortName</code></pre></div>
+  <div class="code" data-k="psa"><div class="code-h"><span>PowerShell (Administrador) · troque o nome e o IP</span><button class="cp" type="button">Copiar</button></div><pre><code>Add-PrinterPort -Name "IP_172.16.10.50" -PrinterHostAddress "172.16.10.50"
+Set-Printer -Name "Impressora Exemplo" -PortName "IP_172.16.10.50"</code></pre></div>
+  <p>Se houver unidades de rede mapeadas para um PC ou servidor que mudou de IP:</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · remapear unidade de rede</span><button class="cp" type="button">Copiar</button></div><pre><code>net use
+net use Z: /delete
+net use Z: \\172.16.10.51\Arquivos /persistent:yes</code></pre></div>
+</section>
+
+<section class="step" id="b6" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B6</span><h3>Liberar a comunicação entre os PCs</h3><label class="done-l"><input type="checkbox" id="chk-b6">feito</label></div>
+  <p class="why">A rede nova é tratada pelo Windows como "Pública" na primeira conexão, e isso bloqueia pastas compartilhadas e a descoberta de outros PCs. Rode em cada PC que precisa compartilhar ou acessar algo. Os comandos funcionam em Windows em português ou inglês.</p>
+  <div class="code" data-k="psa"><div class="code-h"><span>PowerShell (Administrador) · rede privada + descoberta + compartilhamento</span><button class="cp" type="button">Copiar</button></div><pre><code>Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
+Enable-NetFirewallRule -Group "@FirewallAPI.dll,-32752"
+Enable-NetFirewallRule -Group "@FirewallAPI.dll,-28502"
+Get-NetConnectionProfile | Select-Object InterfaceAlias, NetworkCategory</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>A última linha mostra <code>Private</code>. As duas do meio ligam "Descoberta de Rede" e "Compartilhamento de Arquivo e Impressora".</p></div>
+  <p>Teste de um PC para o outro:</p>
+  <div class="code" data-k="ps"><div class="code-h"><span>PowerShell · troque pelo nome ou IP do outro PC</span><button class="cp" type="button">Copiar</button></div><pre><code>ping PC-EXEMPLO
+Test-NetConnection 172.16.10.192 -Port 445</code></pre></div>
+  <p>Depois, no Explorador de Arquivos, digite <code>\\PC-EXEMPLO</code> ou <code>\\172.16.10.192</code> na barra de endereço.</p>
+  <div class="box tip"><b>Um PC não responde ao ping?</b><p>O firewall dele ainda está em modo Público, ou ele pegou IP antes do Wi-Fi mudar. Rode <code>ipconfig /renew</code> e depois os comandos acima.</p></div>
+</section>
+
+<section class="step" id="b7" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B7</span><h3>Testar o failover</h3><label class="done-l"><input type="checkbox" id="chk-b7">feito</label></div>
+  <p class="why">O teste simula "internet da Operadora A caiu, modem ligado", que é a queda mais comum, sem precisar mexer em fibra. Deixe um ping rodando no notebook para medir quanto tempo a rede fica sem responder.</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · janela 1 · deixe rodando</span><button class="cp" type="button">Copiar</button></div><pre><code>ping -t 8.8.8.8</code></pre></div>
+  <p><b>1. Derrubar a Operadora A</b> (bloqueia o ping de monitoramento dela):</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · simular queda</span><button class="cp" type="button">Copiar</button></div><pre><code>/ip firewall filter add chain=output dst-address=208.67.222.222 action=drop comment=TESTE-FAILOVER</code></pre></div>
+  <div class="shot"><div class="shot-cap">Depois de 15 a 30 segundos</div>
+  <div class="wbscroll"><div class="wb" data-path="IP > Routes" data-pins="" data-user="suporte">
+    <div class="wbw full"><div class="wbw-t">Route List<span>□ ✕</span></div>
+      <table class="wbt"><thead><tr><th></th><th>Dst. Address</th><th>Gateway</th><th>Distance</th></tr></thead>
+      <tbody>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPA-DEFAULT</td></tr>
+      <tr class="dis"><td class="fl">XS</td><td>0.0.0.0/0</td><td>208.67.222.222</td><td>1</td></tr>
+      <tr class="cmt"><td></td><td colspan="3">;;; OPB-DEFAULT</td></tr>
+      <tr class="sel"><td class="fl">AS</td><td>0.0.0.0/0 <span class="pin">1</span></td><td>9.9.9.9 recursive via 192.168.20.1 ether2-OPB</td><td>2</td></tr>
+      </tbody></table><div class="wbw-s">7 items</div></div>
+    <div class="wbw full"><div class="wbw-t">Log<span>□ ✕</span></div>
+      <table class="wbt"><thead><tr><th>Time</th><th>Buffer</th><th>Topics</th><th>Message</th></tr></thead>
+      <tbody><tr class="warnr"><td>10:42:37</td><td>memory</td><td>script, warning</td><td>OPERADORA A FORA/DEGRADADA -&gt; usando OPERADORA B <span class="pin">2</span></td></tr></tbody></table></div>
+  </div></div></div>
+  <ol class="legend">
+    <li><span class="pin">1</span><span><b>OPB-DEFAULT</b> ganha o <b>A</b>. A Operadora A aparece com <b>X</b> (desativada pelo Netwatch) ou sem o A.</span></li>
+    <li><span class="pin">2</span><span>O Log avisa a troca.</span></li>
+  </ol>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · janela 2 · o IP público mudou?</span><button class="cp" type="button">Copiar</button></div><pre><code>curl.exe -s https://ifconfig.me/ip</code></pre></div>
+  <div class="box ok"><b>Você deve ver</b><p>No ping, algumas respostas "Esgotado o tempo limite" (normal, até ~30 s) e depois volta. O <code>curl</code> mostra um IP público diferente do anotado no B3: é a Operadora B.</p></div>
+  <p><b>2. Voltar a Operadora A</b>:</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · desfazer a simulação</span><button class="cp" type="button">Copiar</button></div><pre><code>/ip firewall filter remove [find where comment=TESTE-FAILOVER]</code></pre></div>
+  <p>Em até 30 s o Log mostra <code>OPERADORA A OK -&gt; voltando para OPERADORA A</code> e o <code>curl</code> volta a mostrar o IP da Operadora A.</p>
+  <p><b>3. Teste físico</b> (opcional): tire o cabo da <b>ether1</b> por um minuto e recoloque. O comportamento deve ser o mesmo.</p>
+</section>
+
+<section class="step" id="b8" data-g="Fase B · na empresa">
+  <div class="step-h"><span class="step-n">B8</span><h3>Backup e entrega</h3><label class="done-l"><input type="checkbox" id="chk-b8">feito</label></div>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · gerar os backups</span><button class="cp" type="button">Copiar</button></div><pre><code>/export file=config-ok
+/system backup save name=config-ok</code></pre></div>
+  <p>Baixe os dois arquivos: em <b>Files</b>, arraste <code>config-ok.rsc</code> e <code>config-ok.backup</code> para a Área de Trabalho. Ou pelo PowerShell:</p>
+  <div class="code" data-k="ps"><div class="code-h"><span>PowerShell · copiar backups via SSH</span><button class="cp" type="button">Copiar</button></div><pre><code>scp suporte@172.16.10.1:/config-ok.rsc "$env:USERPROFILE\Desktop\"
+scp suporte@172.16.10.1:/config-ok.backup "$env:USERPROFILE\Desktop\"</code></pre></div>
+  <ul>
+    <li><code>.rsc</code> é texto legível: dá para abrir, conferir e aplicar em outro hEX.</li>
+    <li><code>.backup</code> restaura este mesmo aparelho exatamente como está.</li>
+  </ul>
+  <div class="box ok"><b>Checklist de entrega</b><ul>
+    <li>Todos os PCs com IP 172.16.10.x e internet</li>
+    <li>Impressoras imprimindo pelos PCs</li>
+    <li>Pastas compartilhadas abrindo</li>
+    <li>Celulares no Wi-Fi novo, andando entre os APs sem cair</li>
+    <li>Failover testado: caiu e voltou</li>
+    <li>Senha do usuário <code>suporte</code> e backups guardados</li>
+  </ul></div>
+</section>
+
+<div class="phase-h" id="apoio"><h2>Se algo der errado</h2><span>rollback e problemas comuns</span></div>
+
+<section class="step" id="p0" data-g="Apoio">
+  <div class="step-h"><span class="step-n">⟲</span><h3>Plano B: voltar como estava em 5 minutos</h3><label class="done-l"><input type="checkbox" id="chk-p0">li</label></div>
+  <ol class="plain">
+    <li>Tire os cabos das operadoras do hEX e devolva cada um à porta do switch onde estava, conforme a foto do B1.</li>
+    <li>Tire do switch o cabo da ether3.</li>
+    <li>Religue o Wi-Fi dos roteadores Operadora A e Operadora B, se precisar.</li>
+  </ol>
+  <p>As salas voltam a funcionar como antes, porque nos roteadores das operadoras só o Wi-Fi foi desligado. Salas que já estavam em modo AP também continuam funcionando: viram antenas da rede antiga. Depois é só resolver com calma e remarcar.</p>
+</section>
+
+<section class="step" id="p1" data-g="Apoio">
+  <div class="step-h"><span class="step-n">?</span><h3>Problemas comuns</h3><label class="done-l"><input type="checkbox" id="chk-p1">li</label></div>
+
+  <h4>Netwatch falhou (no Log aparece "NETWATCH FALHOU")</h4>
+  <p>Sua versão do RouterOS usa outros nomes de parâmetro. O failover principal (rota recursiva) funciona do mesmo jeito. Crie um Netwatch simples, que funciona em qualquer versão 7:</p>
+  <div class="code" data-k="ros"><div class="code-h"><span>RouterOS · Terminal · Netwatch simples</span><button class="cp" type="button">Copiar</button></div><pre><code>/tool netwatch add name=OPA-MON host=208.67.222.222 interval=10s timeout=1s down-script="/ip route disable [find where comment=\"OPA-DEFAULT\"]; /ip firewall connection remove [find]; :log warning \"OPERADORA A FORA -&gt; usando OPERADORA B\"" up-script="/ip route enable [find where comment=\"OPA-DEFAULT\"]; /ip firewall connection remove [find]; :log warning \"OPERADORA A OK -&gt; voltando para OPERADORA A\""</code></pre></div>
+
+  <h4>DHCP Client em "searching..."</h4>
+  <ul>
+    <li>O cabo está na porta WAN do roteador da operadora? Tem que ser em uma porta <b>LAN</b>.</li>
+    <li>O DHCP do roteador da operadora está ligado? Precisa estar.</li>
+    <li>Troque o cabo e veja se o LED da porta do hEX acende.</li>
+  </ul>
+
+  <h4>Sala sem internet depois da troca</h4>
+  <p>O roteador dessa sala provavelmente tem a WAN com IP fixo na faixa antiga. Entre na página dele e mude a WAN para <b>IP dinâmico / DHCP</b>, ou já faça a conversão para AP do B4. Com o notebook na LAN desse roteador, <code>tracert -d -h 3 8.8.8.8</code> deve mostrar 172.16.10.1 no segundo salto.</p>
+
+  <h4>O MikroTik tem internet, mas os PCs não</h4>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD · diagnóstico no PC</span><button class="cp" type="button">Copiar</button></div><pre><code>ipconfig /all | findstr /i "IPv4 Gateway DNS"
+ping 172.16.10.1
+nslookup google.com 172.16.10.1
+tracert -d -h 4 8.8.8.8</code></pre></div>
+  <p>O PC precisa ter IP 172.16.10.x, gateway e DNS 172.16.10.1. Se tiver IP 169.254.x.x, não pegou DHCP: confira o cabo ou o AP (DHCP do AP tem que estar desligado).</p>
+
+  <h4>Winbox não encontra o hEX</h4>
+  <div class="code" data-k="psa"><div class="code-h"><span>PowerShell (Administrador) · liberar o Winbox no firewall · ajuste o caminho do .exe</span><button class="cp" type="button">Copiar</button></div><pre><code>New-NetFirewallRule -DisplayName "Winbox" -Direction Inbound -Action Allow -Program "$env:USERPROFILE\Downloads\winbox64.exe"</code></pre></div>
+  <p>Se ainda assim não aparecer, dê IP fixo ao notebook e conecte pelo IP:</p>
+  <div class="code" data-k="cmd"><div class="code-h"><span>CMD (Administrador) · IP fixo e depois volta para DHCP · troque "Ethernet" pelo nome da sua placa</span><button class="cp" type="button">Copiar</button></div><pre><code>netsh interface ip set address name="Ethernet" static 172.16.10.9 255.255.255.0 172.16.10.1
+netsh interface ip set address name="Ethernet" dhcp</code></pre></div>
+
+  <h4>Travei o acesso ao MikroTik</h4>
+  <p>Com o hEX ligado, segure o botão <b>RESET</b> até o LED de status começar a piscar (uns 5 s) e solte. Ele volta à configuração de fábrica (192.168.88.1). O arquivo <code>failover.rsc</code> continua em Files: repita o passo A7.</p>
+
+  <h4>Algum site ou sistema reclama depois da troca de link</h4>
+  <p>Normal por alguns segundos: o script derruba as conexões antigas para elas se refazerem pelo link novo. Se um sistema específico exigir IP fixo da Operadora A (liberação por IP no banco ou em ERP), ele só vai funcionar pela Operadora A. Anote e me avise, porque dá para forçar esse destino sempre pela Operadora A.</p>
+</section>
+
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  /* ---------- Winbox shell builder ---------- */
+  var MENU=[["Quick Set"],["Interfaces"],["Bridge"],["PPP"],["Switch"],["Mesh"],["IP",1],["IPv6",1],["MPLS",1],["Routing",1],["System",1],["Queues"],["Files"],["Log"],["RADIUS"],["Tools",1],["New Terminal"],["Make Supout.rif"],["New WinBox"],["Exit"]];
+  var SUB={
+    IP:["ARP","Addresses","Cloud","DHCP Client","DHCP Relay","DHCP Server","DNS","Firewall","Hotspot","IPsec","Neighbors","Pool","Routes","Services","Settings","SMB","SNMP","UPnP"],
+    System:["Auto Upgrade","Certificates","Clock","Console","Disks","Health","History","Identity","LEDs","License","Logging","NTP Client","Packages","Password","Ports","Reboot","Reset Configuration","Resources","RouterBOARD","Scheduler","Scripts","Shutdown","Users"],
+    Tools:["BTest Server","Email","Graphing","IP Scan","MAC Server","Netwatch","Packet Sniffer","Ping","Profile","Torch","Traceroute"]
+  };
+  var HUES=["#3C8DDE","#5CA85C","#D9822B","#8E6BBF","#2BA3A3","#C94F4F","#3C8DDE","#6B8E23","#B8860B","#4682B4","#708090","#C94F4F","#DAA520","#5F9EA0","#9370DB","#CD853F","#222","#999","#3C8DDE","#C94F4F"];
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+  function pin(n){return n?'<span class="pin">'+n+'</span>':""}
+  document.querySelectorAll(".wb[data-path]").forEach(function(el){
+    var parts=el.dataset.path.split(">").map(function(s){return s.trim()});
+    var top=parts[0], sub=parts[1]||null;
+    var pins=(el.dataset.pins||"").split(",");
+    var host=el.dataset.host||"172.16.10.1", ident=el.dataset.ident||"MK-EMPRESA", user=el.dataset.user||"admin";
+    var menu='<ul class="wb-menu">';
+    MENU.forEach(function(m,i){
+      var on=m[0]===top, fly="";
+      if(on&&sub&&SUB[top]){
+        var list=SUB[top], k=list.indexOf(sub), a=Math.max(0,k-3), b=Math.min(list.length,k+4);
+        fly='<ul class="wb-fly'+(i>11?' up':'')+'">'+(a>0?'<li class="more">⋯</li>':'');
+        for(var j=a;j<b;j++){fly+='<li'+(j===k?' class="on"':'')+'>'+esc(list[j])+(j===k?pin(pins[1]):"")+'</li>'}
+        fly+=(b<list.length?'<li class="more">⋯</li>':'')+'</ul>';
+      }
+      menu+='<li'+(on?' class="on"':'')+'><i style="background:'+HUES[i]+'"></i>'+esc(m[0])+(on?pin(pins[0]):"")+(m[1]?'<b>▸</b>':'')+fly+'</li>';
+    });
+    menu+='</ul>';
+    var inner=el.innerHTML;
+    el.innerHTML='<div class="wb-title"><span>'+esc(user+"@"+host+" ("+ident+") - WinBox (64bit) v7.x on hEX (mmips)")+'</span><span class="ctl">— ☐ ✕</span></div>'+
+      '<div class="wb-bar"><span>↶</span><span>↷</span><span class="sm">Safe Mode</span><span>Session: '+esc(host)+'</span><span class="cpu">CPU: 2%</span></div>'+
+      '<div class="wb-body"><div class="wb-strip">RouterOS WinBox</div>'+menu+'<div class="wb-work'+(sub?' fly':'')+'">'+inner+'</div></div>';
+  });
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll(".cp").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var code=btn.closest(".code").querySelector("code"), txt=code.textContent;
+      function done(){btn.textContent="Copiado";btn.classList.add("okd");setTimeout(function(){btn.textContent="Copiar";btn.classList.remove("okd")},1600)}
+      function fallback(){var r=document.createRange();r.selectNodeContents(code);var s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent="Selecionado: Ctrl+C"}
+      try{navigator.clipboard.writeText(txt).then(done,fallback)}catch(e){fallback()}
+    });
+  });
+
+  /* ---------- TOC + progress ---------- */
+  var steps=[].slice.call(document.querySelectorAll("section.step"));
+  function build(nav){
+    var html='<h2>Progresso</h2><div class="prog"><i></i></div><div class="progt"></div>', g=null;
+    steps.forEach(function(s){
+      if(s.dataset.g!==g){ if(g!==null) html+='</ol>'; g=s.dataset.g; html+='<div class="grp">'+esc(g)+'</div><ol>'; }
+      html+='<li><a href="#'+s.id+'" data-for="'+s.id+'"><span class="n">'+esc(s.querySelector(".step-n").textContent)+'</span><span>'+esc(s.querySelector("h3").textContent)+'</span><span class="c">✓</span></a></li>';
+    });
+    nav.innerHTML=html+'</ol>';
+  }
+  var navs=[].slice.call(document.querySelectorAll("[data-toc]"));
+  navs.forEach(build);
+  var KEY="hex-guia-v1", state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){state={}}
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){
+      var cb=s.querySelector(".done-l input"), on=!!(cb&&cb.checked);
+      if(on) n++;
+      s.classList.toggle("is-done",on);
+      document.querySelectorAll('a[data-for="'+s.id+'"]').forEach(function(a){a.classList.toggle("done",on)});
+    });
+    document.querySelectorAll(".prog i").forEach(function(i){i.style.width=(100*n/steps.length)+"%"});
+    document.querySelectorAll(".progt").forEach(function(t){t.textContent=n+" de "+steps.length+" concluídos"});
+  }
+  steps.forEach(function(s){
+    var cb=s.querySelector(".done-l input"); if(!cb) return;
+    cb.checked=!!state[cb.id];
+    cb.addEventListener("change",function(){state[cb.id]=cb.checked;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}refresh()});
+  });
+  refresh();
+})();
+</script>
+
+</body>
+</html>

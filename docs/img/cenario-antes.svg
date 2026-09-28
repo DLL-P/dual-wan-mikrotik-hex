@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" font-family="Manrope, Liberation Sans, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4A4A63"/>
+    </marker>
+  </defs>
+  <rect width="1400" height="760" fill="#ffffff"/>
+
+  <text x="40" y="48" font-size="26" font-weight="700" fill="#141420" font-family="Sora, Liberation Sans, Arial, sans-serif">Antes: duas operadoras misturadas e salas isoladas</text>
+
+  <!-- Operadoras -->
+  <rect x="40" y="100" width="220" height="96" rx="14" fill="#F4F4F8" stroke="#4A4A63" stroke-width="2"/>
+  <text x="150" y="142" text-anchor="middle" font-size="23" font-weight="700" fill="#141420">Operadora A</text>
+  <text x="150" y="172" text-anchor="middle" font-size="18" fill="#4A4A63">fibra</text>
+
+  <rect x="40" y="420" width="220" height="96" rx="14" fill="#F4F4F8" stroke="#4A4A63" stroke-width="2"/>
+  <text x="150" y="462" text-anchor="middle" font-size="23" font-weight="700" fill="#141420">Operadora B</text>
+  <text x="150" y="492" text-anchor="middle" font-size="18" fill="#4A4A63">fibra</text>
+
+  <rect x="330" y="100" width="240" height="96" rx="14" fill="#fff" stroke="#4A4A63" stroke-width="2"/>
+  <text x="450" y="140" text-anchor="middle" font-size="22" font-weight="700" fill="#141420">Modem A</text>
+  <text x="450" y="170" text-anchor="middle" font-size="17" fill="#4A4A63">DHCP ligado · rede A</text>
+
+  <rect x="330" y="420" width="240" height="96" rx="14" fill="#fff" stroke="#4A4A63" stroke-width="2"/>
+  <text x="450" y="460" text-anchor="middle" font-size="22" font-weight="700" fill="#141420">Roteador B</text>
+  <text x="450" y="490" text-anchor="middle" font-size="17" fill="#4A4A63">DHCP ligado · rede B</text>
+
+  <line x1="260" y1="148" x2="326" y2="148" stroke="#4A4A63" stroke-width="3" marker-end="url(#a)"/>
+  <line x1="260" y1="468" x2="326" y2="468" stroke="#4A4A63" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- Cabo misturando as redes -->
+  <line x1="450" y1="196" x2="450" y2="420" stroke="#C0392B" stroke-width="4" stroke-dasharray="10 7"/>
+  <circle cx="450" cy="308" r="22" fill="#C0392B"/>
+  <text x="450" y="316" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">!</text>
+  <text x="486" y="292" font-size="18" font-weight="700" fill="#C0392B">cabo entre as LANs</text>
+  <text x="486" y="316" font-size="17" fill="#C0392B">2 servidores DHCP</text>
+  <text x="486" y="338" font-size="17" fill="#C0392B">na mesma rede</text>
+
+  <!-- Switch / distribuição -->
+  <rect x="690" y="420" width="220" height="96" rx="14" fill="#fff" stroke="#4A4A63" stroke-width="2"/>
+  <text x="800" y="462" text-anchor="middle" font-size="22" font-weight="700" fill="#141420">Distribuição</text>
+  <text x="800" y="492" text-anchor="middle" font-size="17" fill="#4A4A63">cabos das salas</text>
+  <line x1="570" y1="468" x2="686" y2="468" stroke="#4A4A63" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- Salas -->
+  <g>
+    <rect x="1030" y="250" width="300" height="100" rx="14" fill="#FDF2F1" stroke="#C0392B" stroke-width="2"/>
+    <text x="1180" y="290" text-anchor="middle" font-size="21" font-weight="700" fill="#141420">Sala 1 · roteador próprio</text>
+    <text x="1180" y="320" text-anchor="middle" font-size="17" fill="#4A4A63">NAT · rede e Wi-Fi só dela</text>
+
+    <rect x="1030" y="418" width="300" height="100" rx="14" fill="#FDF2F1" stroke="#C0392B" stroke-width="2"/>
+    <text x="1180" y="458" text-anchor="middle" font-size="21" font-weight="700" fill="#141420">Sala 2 · roteador próprio</text>
+    <text x="1180" y="488" text-anchor="middle" font-size="17" fill="#4A4A63">NAT · rede e Wi-Fi só dela</text>
+
+    <rect x="1030" y="586" width="300" height="100" rx="14" fill="#FDF2F1" stroke="#C0392B" stroke-width="2"/>
+    <text x="1180" y="626" text-anchor="middle" font-size="21" font-weight="700" fill="#141420">Sala N · roteador próprio</text>
+    <text x="1180" y="656" text-anchor="middle" font-size="17" fill="#4A4A63">NAT · rede e Wi-Fi só dela</text>
+  </g>
+  <line x1="910" y1="450" x2="1026" y2="305" stroke="#4A4A63" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="910" y1="468" x2="1026" y2="468" stroke="#4A4A63" stroke-width="2.5" marker-end="url(#a)"/>
+  <line x1="910" y1="486" x2="1026" y2="630" stroke="#4A4A63" stroke-width="2.5" marker-end="url(#a)"/>
+
+  <!-- Problemas -->
+  <g font-size="18">
+    <rect x="40" y="592" width="900" height="130" rx="14" fill="#FDF2F1" stroke="#E7B3AD" stroke-width="1.5"/>
+    <circle cx="70" cy="628" r="7" fill="#C0392B"/>
+    <text x="88" y="634" fill="#141420"><tspan font-weight="700">Sem failover:</tspan> se a operadora em uso cai, as salas ficam sem internet até alguém trocar cabo.</text>
+    <circle cx="70" cy="662" r="7" fill="#C0392B"/>
+    <text x="88" y="668" fill="#141420"><tspan font-weight="700">Endereços imprevisíveis:</tspan> cada aparelho pega IP de um dos dois DHCPs.</text>
+    <circle cx="70" cy="696" r="7" fill="#C0392B"/>
+    <text x="88" y="702" fill="#141420"><tspan font-weight="700">Salas isoladas:</tspan> sem impressoras compartilhadas; quem muda de sala troca de rede.</text>
+  </g>
+</svg>

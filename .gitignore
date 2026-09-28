@@ -1,0 +1,17 @@
+# Backups e exports do RouterOS (contêm usuários/senhas ou dados sensíveis)
+*.backup
+*.npk
+config-ok.rsc
+config-final.rsc
+config-*.rsc
+
+# Relatórios entregues ao cliente (contêm credenciais)
+Relatorio*.pdf
+Relatorio*.docx
+*relatorio*.docx
+
+# Diversos
+*.zip
+.DS_Store
+Thumbs.db
+~$*
